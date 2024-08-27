@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, View, Text } from 'react-native';
-import { Audio } from 'expo-av';
-import axios from 'axios';
+import React, { useEffect, useRef, useState } from "react";
+import { Button, View, Text } from "react-native";
+import { Audio } from "expo-av";
+import axios from "axios";
 
 const AudioRecorder = () => {
   const [recording, setRecording] = useState(null);
@@ -19,14 +19,14 @@ const AudioRecorder = () => {
 
   const startRecording = async () => {
     try {
-      console.log('Requesting permissions...');
+      console.log("Requesting permissions...");
       const { granted } = await Audio.requestPermissionsAsync();
       if (!granted) {
-        setError('Permission to access microphone is required');
+        setError("Permission to access microphone is required");
         return;
       }
 
-      console.log('Starting recording...');
+      console.log("Starting recording...");
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
@@ -44,8 +44,8 @@ const AudioRecorder = () => {
       setIsRecording(true);
       setError(null);
     } catch (err) {
-      console.error('Failed to start recording', err);
-      setError('Failed to start recording');
+      console.error("Failed to start recording", err);
+      setError("Failed to start recording");
     }
   };
 
@@ -58,7 +58,7 @@ const AudioRecorder = () => {
   };
 
   const stopRecording = async () => {
-    console.log('Stopping recording...');
+    console.log("Stopping recording...");
     setIsRecording(false);
     await recording.stopAndUnloadAsync();
     setRecording(null);
@@ -68,33 +68,33 @@ const AudioRecorder = () => {
     try {
       const uri = recording.getURI();
       const formData = new FormData();
-      formData.append('file', {
+      formData.append("file", {
         uri,
-        name: 'audio.wav',
-        type: 'audio/wav',
+        name: "audio.wav",
+        type: "audio/wav",
       });
 
-      console.log('Sending audio to backend...');
-      await axios.post('http://your-backend-url.com/upload', formData, {
+      console.log("Sending audio to backend...");
+      await axios.post("http://your-backend-url.com/upload", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
-      console.log('Audio sent successfully');
+      console.log("Audio sent successfully");
     } catch (err) {
-      console.error('Failed to send audio to backend', err);
-      setError('Failed to send audio to backend');
+      console.error("Failed to send audio to backend", err);
+      setError("Failed to send audio to backend");
     }
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>{isRecording ? 'Recording...' : 'Press to Record'}</Text>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Text>{isRecording ? "Recording..." : "Press to Record"}</Text>
       <Button
-        title={isRecording ? 'Stop Recording' : 'Start Recording'}
+        title={isRecording ? "Stop Recording" : "Start Recording"}
         onPress={isRecording ? stopRecording : startRecording}
       />
-      {error && <Text style={{ color: 'red' }}>{error}</Text>}
+      {error && <Text style={{ color: "red" }}>{error}</Text>}
     </View>
   );
 };

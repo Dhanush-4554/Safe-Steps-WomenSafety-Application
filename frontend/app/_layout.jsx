@@ -6,11 +6,12 @@ import Trust1 from './auth/register/trust1';
 import Trust2 from './auth/register/trust2';
 import Login from './auth/login';
 import Otp from './auth/Otp';
+import Buttons from './home';
 
 export default function App() {
   return (
     <>
-      <Otp />
+      <Buttons />
       <StatusBar style="auto" />
     </>
      //<View style={styles.container}>

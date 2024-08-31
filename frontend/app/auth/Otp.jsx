@@ -1,24 +1,23 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 
-const Login = () => {
-  const [phoneNumber, setPhoneNumber] = useState('');
+const Otp = () => {
+    const [otp, setotp] = useState('');
  
-
   return (
     <View style={styles.mainContainer}>
-      <Text style={styles.mainHeader}>Login Form</Text>
+      <Text style={styles.mainHeader}>OTP</Text>
       
       <View style={styles.inputContainer}>
-        <Text style={styles.labels}>phone number</Text>
+        <Text style={styles.labels}>OTP</Text>
         <TextInput
           style={styles.inputStyle}
           autoCapitalize="none"
           autoCorrect={false}
           keyboardType="phone-pad" 
-          value={phoneNumber} 
-          onChangeText={setPhoneNumber} 
-          placeholder="Phone Number"
+          value={otp} 
+          onChangeText={setotp} 
+          placeholder="otp"
           editable={true} 
         />
       </View>
@@ -26,16 +25,16 @@ const Login = () => {
 
       
       <TouchableOpacity style={styles.buttonStyle}>
-        <Text style={styles.buttonText}>LOGIN</Text>
+        <Text style={styles.buttonText}>SUBMIT</Text>
       </TouchableOpacity>
     </View>
-  );
-};
+  )
+}
 
-export default Login;
+export default Otp
 
 const styles = StyleSheet.create({
-  mainContainer: {
+    mainContainer: {
     height: '100%',
     paddingHorizontal: 30,
     paddingTop: 30,
@@ -78,4 +77,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#fff',
   },
-});
+})

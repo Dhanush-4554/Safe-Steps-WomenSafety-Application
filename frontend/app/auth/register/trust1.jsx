@@ -1,16 +1,18 @@
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
+import { Picker } from '@react-native-picker/picker';  
 
 const Trust1 = () => {
     const [name, setName] = useState(''); 
     const [phoneNumber, setPhoneNumber] = useState(''); 
+    const [selectedValue, setSelectedValue] = useState('select');  
 
   return (
     <View style={styles.mainContainer}>
       <Text style={styles.mainHeader}>Trust1</Text>
       
       <View style={styles.inputContainer}>
-        <Text style={styles.labels}>Enter your name</Text>
+        <Text style={styles.labels}>Name of your trusted person</Text>
         <TextInput
           style={styles.inputStyle}
           autoCapitalize="none"
@@ -23,7 +25,7 @@ const Trust1 = () => {
       </View>
       
       <View style={styles.inputContainer}>
-        <Text style={styles.labels}>Enter your phone number</Text>
+        <Text style={styles.labels}>phone number</Text>
         <TextInput
           style={styles.inputStyle}
           autoCapitalize="none"
@@ -35,6 +37,22 @@ const Trust1 = () => {
           editable={true} 
         />
       </View>
+
+      <View style={styles.inputContainer}>  
+        <Text style={styles.labels}>Gender</Text>  
+        <View style={styles.pickerContainer}>  
+          <Picker  
+            selectedValue={selectedValue}  
+            onValueChange={(itemValue) => setSelectedValue(itemValue)}  
+            style={styles.picker}  
+          >  
+            <Picker.Item label="Select" value="select" />  
+            <Picker.Item label="Female" value="Female" />  
+            <Picker.Item label="Male" value="Male" />  
+            <Picker.Item label="others" value="others" />  
+          </Picker>  
+        </View>  
+      </View>  
 
       <TouchableOpacity style={styles.buttonStyle}>
         <Text style={styles.buttonText}>SUBMIT</Text>
@@ -89,4 +107,14 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#fff',
       },
+      pickerContainer: {  
+    borderWidth: 1,  
+    borderColor: '#ccc',  
+    borderRadius: 4,  
+    overflow: 'hidden',  
+  },  
+  picker: {  
+    height: 50,  
+    width: '100%',  
+  },  
 })

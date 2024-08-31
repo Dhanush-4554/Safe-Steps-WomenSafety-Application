@@ -4,11 +4,14 @@ import AudioRecorder from './_recording';
 import RegisterLayout from './auth/registerLayout';
 import Trust1 from './auth/register/trust1';
 import Trust2 from './auth/register/trust2';
+import Login from './auth/login';
+import Otp from './auth/Otp';
+import Buttons from './home';
 
 export default function App() {
   return (
     <>
-      <Trust2 />
+      <Buttons />
       <StatusBar style="auto" />
     </>
      //<View style={styles.container}>

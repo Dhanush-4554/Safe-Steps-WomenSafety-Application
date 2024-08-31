@@ -28,6 +28,13 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderWidth: 1,
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
+    backgroundColor:"white",
+    fontFamily:"roboto",
+  },
+  label: {
+    marginBottom: 5,
+    fontSize: 16,
+    color: "blue", 
   },
 });

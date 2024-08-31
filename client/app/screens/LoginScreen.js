@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  Alert,
+} from "react-native";
 import auth from "@react-native-firebase/auth";
 import firestore from "@react-native-firebase/firestore";
 
@@ -22,7 +29,7 @@ export default function LoginScreen({ navigation }) {
         setConfirmResult(confirmation);
       }
     } catch (error) {
-      Alert.alert("Wrong Number", "Check the Phone number once agin", [
+      Alert.alert("Wrong Number", "Check the Phone number once again", [
         {
           text: "Okay",
           style: "cancel",
@@ -50,7 +57,7 @@ export default function LoginScreen({ navigation }) {
         }
       }
     } catch (error) {
-      Alert.alert("Wrong Number", "Check the Phone number once agin", [
+      Alert.alert("Wrong Number", "Check the Phone number once again", [
         {
           text: "Okay",
           style: "cancel",
@@ -70,7 +77,9 @@ export default function LoginScreen({ navigation }) {
             keyboardType="phone-pad"
             style={styles.input}
           />
-          <Button title="Send Code" onPress={signInWithPhoneNumber} />
+          <TouchableOpacity style={styles.button} onPress={signInWithPhoneNumber}>
+            <Text style={styles.buttonText}>Send Code</Text>
+          </TouchableOpacity>
         </>
       ) : (
         <>
@@ -80,20 +89,23 @@ export default function LoginScreen({ navigation }) {
             keyboardType="number-pad"
             style={styles.input}
           />
-          <Button title="Confirm Code" onPress={confirmCode} />
+          <TouchableOpacity style={styles.button} onPress={confirmCode}>
+            <Text style={styles.buttonText}>Confirm Code</Text>
+          </TouchableOpacity>
         </>
       )}
       <View style={styles.footer}>
-        <Button title="Home" onPress={() => navigation.navigate("Home")} />
-        <Button
-          title="register"
-          onPress={() => navigation.navigate("Register")}
-        />
+        <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate("Home")}>
+          <Text style={styles.footerButtonText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate("Register")}>
+          <Text style={styles.footerButtonText}>Register</Text>
+        </TouchableOpacity>
         {/*
-        <Button
-          title="Profile"
-          onPress={() => navigation.navigate("Profile")}
-        /> */}
+        <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate("Profile")}>
+          <Text style={styles.footerButtonText}>Profile</Text>
+        </TouchableOpacity> 
+        */}
       </View>
     </View>
   );
@@ -104,17 +116,46 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 20,
+    backgroundColor: "#FF5A5F",
   },
   input: {
     borderColor: "#ccc",
     borderWidth: 1,
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
     marginVertical: 10,
+    backgroundColor: "#FFFF",
+    fontFamily: 'Roboto', 
+    fontColor: "##FF5A5F",
+  },
+  button: {
+    backgroundColor: "white",
+    padding: 15,
+    borderRadius: 20,
+    alignItems: "center",
+    marginTop: 10,
+   fontWeight: "bold",
+  },
+  buttonText: {  
+    fontFamily: 'Roboto',  
+    fontSize: 18,  
+    color: '#FF5A5F',  
   },
   footer: {
     flexDirection: "row",
     justifyContent: "space-around",
     paddingVertical: 20,
   },
+  footerButton: {
+    backgroundColor: "#6c757d",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    width: 100,
+  },
+  footerButtonText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+  },
 });
+

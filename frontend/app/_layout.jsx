@@ -7,11 +7,12 @@ import Trust2 from './auth/register/trust2';
 import Login from './auth/login';
 import Otp from './auth/Otp';
 import Buttons from './home';
+import Landing from './landing';
 
 export default function App() {
   return (
     <>
-      <Buttons />
+      <Landing />
       <StatusBar style="auto" />
     </>
      //<View style={styles.container}>

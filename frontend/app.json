@@ -16,7 +16,9 @@
       "supportsTablet": true
     },
     "android": {
-      "permissions": ["AUDIO_RECORDING"],
+      "permissions": [
+        "AUDIO_RECORDING"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -26,7 +28,8 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ]
   }
 }

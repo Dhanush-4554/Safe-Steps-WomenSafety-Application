@@ -12,6 +12,7 @@ export default function ToggleSwitch() {
         trackColor={{ false: "#767577", true: "#81b0ff" }}
         thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
         onValueChange={toggleSwitch}
+        style={{ transform: [{ scaleX: 2 }, { scaleY: 2 }] }}
         value={isEnabled}
       />
     </View>
@@ -21,7 +22,7 @@ export default function ToggleSwitch() {
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    top: 10,
-    right: 10,
+    top: 40,
+    right: 40,
   },
 });

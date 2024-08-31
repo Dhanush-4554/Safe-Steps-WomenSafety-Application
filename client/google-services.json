@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "657054695530",
+    "project_id": "sih2k24-388b0",
+    "storage_bucket": "sih2k24-388b0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:657054695530:android:a3250617dd9ca6be518a13",
+        "android_client_info": {
+          "package_name": "com.dhanush_dev.client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjBr8EmoATMl7c5G4vhT3yQ7NGdck0HFg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

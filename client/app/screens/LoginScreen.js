@@ -95,12 +95,12 @@ export default function LoginScreen({ navigation }) {
         </>
       )}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate("Home")}>
+        {/* <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate("Home")}>
           <Text style={styles.footerButtonText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate("Register")}>
           <Text style={styles.footerButtonText}>Register</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         {/*
         <TouchableOpacity style={styles.footerButton} onPress={() => navigation.navigate("Profile")}>
           <Text style={styles.footerButtonText}>Profile</Text>

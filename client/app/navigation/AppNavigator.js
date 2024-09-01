@@ -71,6 +71,7 @@ export default function AppNavigator({ user }) {
           options={({ navigation }) => ({
             title: "Home",
             headerRight: () => (
+              
               <TouchableOpacity onPress={() => handleLogout(navigation)} style={{ marginRight: 10 }}>  
                 <Ionicons name="log-out-outline" size={30} color="#FF5A5F" />  
               </TouchableOpacity>  

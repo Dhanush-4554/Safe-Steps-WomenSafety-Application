@@ -33,7 +33,7 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
-import { Button, Alert } from "react-native";
+import { TouchableOpacity, Alert } from "react-native";
 
 import auth from "@react-native-firebase/auth";
 import HomeScreen from "../screens/HomeScreen";
@@ -42,6 +42,7 @@ import LoginScreen from "../screens/LoginScreen";
 import LandingScreen from "../screens/LandingScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import NightSupportScreen from "../screens/NightSupportScreen";
+import { Ionicons } from "@expo/vector-icons"; 
 
 const Stack = createStackNavigator();
 
@@ -70,11 +71,9 @@ export default function AppNavigator({ user }) {
           options={({ navigation }) => ({
             title: "Home",
             headerRight: () => (
-              <Button
-                onPress={() => handleLogout(navigation)}
-                title="Logout"
-                color="blue"
-              />
+              <TouchableOpacity onPress={() => handleLogout(navigation)} style={{ marginRight: 10 }}>  
+                <Ionicons name="log-out-outline" size={30} color="#FF5A5F" />  
+              </TouchableOpacity>  
             ),
           })}
         />

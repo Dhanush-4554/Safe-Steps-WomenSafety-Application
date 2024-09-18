@@ -10,7 +10,7 @@ export default function HomeScreen({ navigation }) {
     console.log("SOS Clicked");
     
     try {
-      const response = await fetch('http://192.168.241.201:5000/send-call', {
+      const response = await fetch(' http://192.168.144.70:5000/send-call', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

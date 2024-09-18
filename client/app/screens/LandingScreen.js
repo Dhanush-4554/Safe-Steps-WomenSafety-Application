@@ -69,16 +69,16 @@ const Landing = ({ navigation }) => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.buttonStyle}
+          onPress={() => navigation.navigate("Home")}
+        >
+          <Text style={styles.buttonText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.buttonStyle}
           onPress={() => navigation.navigate("Login")}
         >
-          <Text style={styles.buttonText}>Get Started</Text>
+          <Text style={styles.buttonText}> Login </Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity
-          style={styles.buttonStyle}
-          onPress={() => navigation.navigate("Register")}
-        >
-          <Text style={styles.buttonText}>SIGN UP</Text>
-        </TouchableOpacity> */}
       </View>
     </View>
   );

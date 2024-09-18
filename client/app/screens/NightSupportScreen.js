@@ -1,22 +1,32 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Switch, StyleSheet, TouchableOpacity, Text, Alert, Button } from "react-native";
+import { View, Switch, StyleSheet, TouchableOpacity, Text, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Location from 'expo-location';
 import { database } from '../../firebase'; // Import the configured Firebase
 import { ref, set, onValue } from 'firebase/database';
 import { Audio } from 'expo-av';
 
+// Request microphone permission
+const requestMicPermission = async () => {
+  const { status } = await Audio.requestPermissionsAsync();
+  if (status !== 'granted') {
+    Alert.alert('Permission required', 'Microphone permission is required to record audio.');
+    return false;
+  }
+  return true;
+};
+
 export default function NightSupportScreen({ navigation }) {
   const [isEnabled, setIsEnabled] = useState(false);
   const [location, setLocation] = useState(null);
   const [intervalId, setIntervalId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [isMicEnabled, setIsMicEnabled] = useState(false); // State for microphone control
+  const [isMicEnabled, setIsMicEnabled] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const recordingRef = useRef(null);
 
   const toggleSwitch = () => {
-    setIsEnabled((previousState) => !previousState);
+    setIsEnabled(previousState => !previousState);
     if (!isEnabled) {
       startLocationUpdates();
     } else {
@@ -38,7 +48,7 @@ export default function NightSupportScreen({ navigation }) {
     }
 
     try {
-      const response = await fetch('http://192.168.241.201:5000/send-sms', {
+      const response = await fetch('http://192.168.0.104:5000/send-sms', {
         method: 'POST',
       });
       if (!response.ok) {
@@ -88,6 +98,8 @@ export default function NightSupportScreen({ navigation }) {
   };
 
   const enableMic = async () => {
+    const hasPermission = await requestMicPermission();
+    if (!hasPermission) return;
     try {
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
@@ -118,31 +130,32 @@ export default function NightSupportScreen({ navigation }) {
 
   const recordAndSendAudio = async () => {
     let recording = recordingRef.current;
-  
+
     try {
       if (!recording) {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: true,
-          playsInSilentModeIOS: true,
-        });
-  
         recording = new Audio.Recording();
-        await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
         recordingRef.current = recording;
+
+        // Prepare the recorder
+        await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
       }
-  
+
+      // Ensure the recording is prepared before starting
       if (!isRecording) {
         await recording.startAsync();
         setIsRecording(true);
         console.log('Recording started');
       }
-  
-      await new Promise(resolve => setTimeout(resolve, 15000)); // Record for 15 seconds
-  
+
+      // Record for 15 seconds
+      await new Promise(resolve => setTimeout(resolve, 15000));
+
+      // Stop the recording
       await recording.stopAndUnloadAsync();
       const uri = recording.getURI();
       console.log('Recording stopped and stored at', uri);
-  
+
+      // Upload the recording if the URI exists
       if (uri) {
         const formData = new FormData();
         formData.append('file', {
@@ -150,47 +163,48 @@ export default function NightSupportScreen({ navigation }) {
           type: 'audio/3gp',
           name: 'file.3gp',
         });
-  
+
         try {
-          const response = await fetch('http://192.168.241.201:5000/predict', {
+          const response = await fetch(' http://192.168.144.70:5000/predict', {
             method: 'POST',
             body: formData,
           });
-  
-          // If needed, you can log the server response for debugging purposes
-          // const result = await response.json();
-          // console.log('Server response:', result);
+          // Optionally log the server response here
         } catch (uploadError) {
-          // Handle upload errors silently
           console.error('Failed to upload audio:', uploadError);
         }
       }
-  
-      // Wait for 5 seconds before starting the next recording
+
+      // Wait 5 seconds before starting the next recording
       await new Promise(resolve => setTimeout(resolve, 5000));
+
     } catch (error) {
-      // Handle recording errors silently
       console.error('Failed to record audio:', error);
     } finally {
+      // Reset the recorder ref after use
       if (recording) {
         recording = null;
         recordingRef.current = null;
+        setIsRecording(false);
       }
     }
   };
-  
 
   const startRecordingLoop = () => {
     if (!isRecording) {
       setIsRecording(true);
-      setInterval(recordAndSendAudio, 20000); // 15s recording + 5s delay
+      const loopId = setInterval(recordAndSendAudio, 20000); // 15s recording + 5s delay
+      setIntervalId(loopId); // Store the interval ID
     }
   };
 
   const stopRecordingLoop = () => {
     if (isRecording) {
       setIsRecording(false);
-      clearInterval(recordAndSendAudio); // Stop the recording loop
+      if (intervalId) {
+        clearInterval(intervalId); // Use the interval ID to clear the loop
+        setIntervalId(null);
+      }
     }
   };
 

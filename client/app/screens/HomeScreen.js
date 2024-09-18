@@ -1,19 +1,18 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import SOSButton from "../components/SOSButton";  
-import ToggleSwitch from "../components/ToggleSwitch";  
+import SOSButton from "../components/SOSButton";
+import ToggleSwitch from "../components/ToggleSwitch";
 
 export default function HomeScreen({ navigation }) {
-
   const handleSOSPress = async () => {
     console.log("SOS Clicked");
-    
+
     try {
-      const response = await fetch(' http://192.168.144.70:5000/send-call', {
-        method: 'POST',
+      const response = await fetch("http://192.168.144.23:5000/send-call", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
@@ -22,30 +21,44 @@ export default function HomeScreen({ navigation }) {
       }
 
       const result = await response.json();
-      console.log('Call initiated:', result);
-      Alert.alert('Alert Sent', 'A call has been initiated to notify emergency services.');
+      console.log("Call initiated:", result);
+      Alert.alert(
+        "Alert Sent",
+        "A call has been initiated to notify emergency services."
+      );
     } catch (error) {
-      console.error('Failed to send call alert:', error);
-      Alert.alert('Error', 'Failed to send call alert. Please try again.');
+      console.error("Failed to send call alert:", error);
+      Alert.alert("Error", "Failed to send call alert. Please try again.");
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Having an Emergency?</Text>
-      <Text style={styles.subtitle}>Tap the SOS button to alert the emergency services.</Text>
+      <Text style={styles.subtitle}>
+        Tap the SOS button to alert the emergency services.
+      </Text>
       <SOSButton onPress={handleSOSPress} />
 
       <View style={styles.footer}>
-        <TouchableOpacity onPress={() => navigation.navigate("Home")} style={styles.button}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Home")}
+          style={styles.button}
+        >
           <Ionicons name="home" size={24} color="#FF5A5F" />
           <Text style={styles.buttonText}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("NightSupport")} style={styles.button}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("NightSupport")}
+          style={styles.button}
+        >
           <Ionicons name="moon" size={24} color="#FF5A5F" />
           <Text style={styles.buttonText}>Night Support</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("Profile")} style={styles.button}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Profile")}
+          style={styles.button}
+        >
           <Ionicons name="person" size={24} color="#FF5A5F" />
           <Text style={styles.buttonText}>Profile</Text>
         </TouchableOpacity>

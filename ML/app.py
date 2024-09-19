@@ -11,6 +11,8 @@ from flask_cors import CORS
 import logging
 from twilio.rest import Client
 from twilio.twiml.voice_response import VoiceResponse
+import torch
+from transformers import Wav2Vec2ForSequenceClassification, Wav2Vec2FeatureExtractor
 
 # Configure logging to show only errors
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -24,12 +26,17 @@ account_sid = "AC7f41acdba81736c349ab2a60622b97a4"
 auth_token = "fc69f0823f5a7a4d031a48c6d9ab4440"
 client = Client(account_sid, auth_token)
 
-# Load the trained model
+# Load the Keras help detection model
 try:
-    model = load_model('help_detection_model.h5')
+    help_detection_model = load_model('help_detection_model.h5')
 except Exception as e:
-    logger.error(f'Error loading model: {str(e)}')
+    logger.error(f'Error loading Keras model: {str(e)}')
     raise
+
+# Load the Wav2Vec2 model and feature extractor for emotion recognition
+wav2vec_model_name = "ehcalabres/wav2vec2-lg-xlsr-en-speech-emotion-recognition"
+emotion_model = Wav2Vec2ForSequenceClassification.from_pretrained(wav2vec_model_name)
+feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained(wav2vec_model_name)
 
 @app.route('/', methods=['GET'])
 def home():
@@ -43,7 +50,7 @@ def send_call():
 
         call = client.calls.create(
             twiml=twiml,
-            to='+918618541131',
+            to='+916361304218',
             from_='+16122844698'
         )
         logger.error(f'Call initiated. Call SID: {call.sid}')
@@ -65,7 +72,7 @@ def send_sms():
 
         client.messages.create(
             from_='+16122844698',
-            to='+918618541131',
+            to='+916361304218',
             body=f'Your friend is in big trouble, please check out the link: {live_location}'
         )
         logger.error('SMS alert sent successfully.')
@@ -82,9 +89,8 @@ def send_sms_endpoint():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/predict', methods=['POST'])
-    
 def predict():
-    print("Hit predit")
+    print("Hit predict")
     if 'file' not in request.files:
         return jsonify({'error': 'No file provided'}), 400
 
@@ -96,7 +102,6 @@ def predict():
         original_file_path = os.path.join('uploads', file.filename)
         file.save(original_file_path)
 
-        audio_format = original_file_path.split('.')[-1]
         if file.filename.endswith('.3gp'):
             audio = AudioSegment.from_file(original_file_path, format='3gp')
             wav_file_path = original_file_path.replace('.3gp', '.wav')
@@ -104,7 +109,10 @@ def predict():
         else:
             wav_file_path = original_file_path
 
+        # Preprocess the audio and detect keyword, pitch, and energy
         text, keyword_detected, avg_pitch, avg_energy = preprocess_audio(wav_file_path)
+
+        # Get emotion probabilities using the Wav2Vec2 model
         emotion_response = get_emotion_probs(wav_file_path)
 
         if isinstance(emotion_response, list) and len(emotion_response) > 0:
@@ -117,17 +125,19 @@ def predict():
         else:
             return jsonify({'error': 'Invalid or empty response from Hugging Face API'}), 500
 
+        # Prepare the inputs for the Keras help detection model
         keyword_input = np.array([[int(keyword_detected)]], dtype=np.float32)
         pitch_input = np.array([[avg_pitch]], dtype=np.float32)
         energy_input = np.array([[avg_energy]], dtype=np.float32)
         emotion_probs = emotion_probs.astype(float)
 
         if keyword_detected:
-            prediction = model.predict([keyword_input, pitch_input, energy_input, emotion_probs])
+            # Use the Keras model for prediction
+            prediction = help_detection_model.predict([keyword_input, pitch_input, energy_input, emotion_probs])
             label = (prediction > 0.5).astype(int)[0][0]
             result = "Help" if label == 1 else "No Help"
             logger.error(f"Help detection result: {result}")
-            
+
             if result == "Help":
                 send_alert()
         else:
@@ -159,13 +169,13 @@ def send_alert():
 
         client.messages.create(
             from_='+16122844698',
-            to='+918618541131',
+            to='+916361304218',
             body=f'Your friend is in big trouble, please check out the link: {live_location}'
         )
 
         call = client.calls.create(
             twiml=twiml,
-            to='+918618541131',
+            to='+916361304218',
             from_='+16122844698'
         )
         logger.error(f'Alert sent. Call SID: {call.sid}')
@@ -181,7 +191,6 @@ def preprocess_audio(audio_file_path):
     try:
         text = recognizer.recognize_google(audio_data)
         keyword_detected = detect_keywords(text)
-        
     except sr.UnknownValueError:
         text = ""
         keyword_detected = False
@@ -213,18 +222,32 @@ def analyze_pitch_and_volume(audio_path):
     return avg_pitch, avg_energy
 
 def get_emotion_probs(filename):
-    API_URL = "https://api-inference.huggingface.co/models/ehcalabres/wav2vec2-lg-xlsr-en-speech-emotion-recognition"
-    headers = {"Authorization": "Bearer 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"}
-
-    with open(filename, "rb") as f:
-        data = f.read()
     try:
-        response = requests.post(API_URL, headers=headers, data=data)
-        response.raise_for_status()
-        return response.json()
-    except requests.RequestException as e:
-        logger.error(f'Error during Hugging Face API request: {str(e)}')
+        # Load and preprocess the audio file
+        audio, sample_rate = librosa.load(filename, sr=16000)  # Resample to 16kHz
+        inputs = feature_extractor(audio, sampling_rate=sample_rate, return_tensors="pt", padding=True)
+
+        # Forward pass to get logits
+        with torch.no_grad():
+            outputs = emotion_model(**inputs)
+            logits = outputs.logits
+
+        # Apply softmax to convert logits to probabilities
+        probs = torch.nn.functional.softmax(logits, dim=-1)
+        emotion_probs = probs[0].cpu().numpy()  # Extract probabilities for each emotion
+
+        # Define the emotion labels based on the model's output
+        emotion_labels = ['neutral', 'calm', 'happy', 'sad', 'angry', 'fearful', 'disgust', 'surprised']
+
+        # Map the probabilities to corresponding emotions
+        emotion_results = [{'label': emotion_labels[i], 'score': float(emotion_probs[i])} for i in range(len(emotion_probs))]
+
+        return emotion_results
+
+    except Exception as e:
+        logger.error(f'Error during local emotion recognition: {str(e)}')
         raise
+
 
 # Define an extensive list of keywords and phrases for help detection
 keywords = [

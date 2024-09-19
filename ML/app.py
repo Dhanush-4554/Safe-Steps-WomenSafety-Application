@@ -1,18 +1,20 @@
 import os
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras.models import load_model
-import requests
-import speech_recognition as sr
 import librosa
+import torch
+import requests
+import asyncio
+import aiofiles
 from pydub import AudioSegment
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import logging
 from twilio.rest import Client
 from twilio.twiml.voice_response import VoiceResponse
-import torch
+import concurrent.futures
 from transformers import Wav2Vec2ForSequenceClassification, Wav2Vec2FeatureExtractor
+from tensorflow.keras.models import load_model
+import logging
+import speech_recognition as sr
 
 # Configure logging to show only errors
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -26,65 +28,54 @@ account_sid = "AC7f41acdba81736c349ab2a60622b97a4"
 auth_token = "fc69f0823f5a7a4d031a48c6d9ab4440"
 client = Client(account_sid, auth_token)
 
-# Load the Keras help detection model
+# Load the trained help detection model
 try:
     help_detection_model = load_model('help_detection_model.h5')
 except Exception as e:
-    logger.error(f'Error loading Keras model: {str(e)}')
+    logger.error(f'Error loading model: {str(e)}')
     raise
 
-# Load the Wav2Vec2 model and feature extractor for emotion recognition
-wav2vec_model_name = "ehcalabres/wav2vec2-lg-xlsr-en-speech-emotion-recognition"
-emotion_model = Wav2Vec2ForSequenceClassification.from_pretrained(wav2vec_model_name)
-feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained(wav2vec_model_name)
+# Load the Wav2Vec2 model and feature extractor once
+model_name = "ehcalabres/wav2vec2-lg-xlsr-en-speech-emotion-recognition"
+model = Wav2Vec2ForSequenceClassification.from_pretrained(model_name)
+feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained(model_name)
 
 @app.route('/', methods=['GET'])
 def home():
     return jsonify({'message': 'Flask server is running!'})
 
-def send_call():
+# Asynchronous Twilio SMS function
+async def async_send_sms():
+    try:
+        live_location = "https://maps-eta-gilt.vercel.app/map"
+        await client.messages.create(
+            from_='+16122844698',
+            to='+916361304218',
+            body=f'Your friend is in big trouble, please check out the link: {live_location}'
+        )
+    except Exception as e:
+        logger.error(f'Failed to send SMS alert: {str(e)}')
+
+# Asynchronous Twilio call function
+async def async_send_call():
     try:
         live_location = "https://maps-eta-gilt.vercel.app/map"
         twiml = VoiceResponse()
         twiml.say(voice='alice', message='Hello! Your friend might be in big trouble. Please check the SMS message.')
 
-        call = client.calls.create(
+        await client.calls.create(
             twiml=twiml,
             to='+916361304218',
             from_='+16122844698'
         )
-        logger.error(f'Call initiated. Call SID: {call.sid}')
-
     except Exception as e:
         logger.error(f'Failed to send call alert: {str(e)}')
 
-@app.route('/send-call', methods=['POST'])
-def send_call_endpoint():
+@app.route('/send-alerts', methods=['POST'])
+async def send_alerts():
     try:
-        send_call()
-        return jsonify({'message': 'Call initiated successfully.'}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-def send_sms():
-    try:
-        live_location = "https://maps-eta-gilt.vercel.app/map"
-
-        client.messages.create(
-            from_='+16122844698',
-            to='+916361304218',
-            body=f'Your friend is in big trouble, please check out the link: {live_location}'
-        )
-        logger.error('SMS alert sent successfully.')
-
-    except Exception as e:
-        logger.error(f'Failed to send SMS alert: {str(e)}')
-
-@app.route('/send-sms', methods=['POST'])
-def send_sms_endpoint():
-    try:
-        send_sms()
-        return jsonify({'message': 'SMS sent successfully.'}), 200
+        await asyncio.gather(async_send_sms(), async_send_call())
+        return jsonify({'message': 'Alerts sent successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -100,7 +91,12 @@ def predict():
 
     try:
         original_file_path = os.path.join('uploads', file.filename)
-        file.save(original_file_path)
+
+        # Save file asynchronously
+        async def save_file():
+            async with aiofiles.open(original_file_path, 'wb') as f:
+                await f.write(file.read())
+        asyncio.run(save_file())
 
         if file.filename.endswith('.3gp'):
             audio = AudioSegment.from_file(original_file_path, format='3gp')
@@ -109,11 +105,15 @@ def predict():
         else:
             wav_file_path = original_file_path
 
-        # Preprocess the audio and detect keyword, pitch, and energy
-        text, keyword_detected, avg_pitch, avg_energy = preprocess_audio(wav_file_path)
+        # Run preprocessing and emotion recognition in parallel
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            # Submit tasks for parallel processing
+            preprocess_future = executor.submit(preprocess_audio, wav_file_path)
+            emotion_future = executor.submit(get_emotion_probs, wav_file_path)
 
-        # Get emotion probabilities using the Wav2Vec2 model
-        emotion_response = get_emotion_probs(wav_file_path)
+            # Wait for results
+            text, keyword_detected, avg_pitch, avg_energy = preprocess_future.result()
+            emotion_response = emotion_future.result()
 
         if isinstance(emotion_response, list) and len(emotion_response) > 0:
             emotion_probs = np.array([emotion['score'] for emotion in emotion_response], dtype=np.float32)
@@ -139,7 +139,7 @@ def predict():
             logger.error(f"Help detection result: {result}")
 
             if result == "Help":
-                send_alert()
+                asyncio.run(send_alerts())
         else:
             result = "No keyword detected. The audio indicates 'No Help'."
             logger.error("Help detection result: No Help (No keyword detected)")
@@ -161,28 +161,6 @@ def predict():
         logger.error(f'An error occurred during processing: {str(e)}')
         return jsonify({'error': 'An error occurred', 'details': str(e)}), 500
 
-def send_alert():
-    try:
-        live_location = "https://maps-eta-gilt.vercel.app/map"
-        twiml = VoiceResponse()
-        twiml.say(voice='alice', message='Hello! Your friend might be in big trouble. Please check the SMS message.')
-
-        client.messages.create(
-            from_='+16122844698',
-            to='+916361304218',
-            body=f'Your friend is in big trouble, please check out the link: {live_location}'
-        )
-
-        call = client.calls.create(
-            twiml=twiml,
-            to='+916361304218',
-            from_='+16122844698'
-        )
-        logger.error(f'Alert sent. Call SID: {call.sid}')
-
-    except Exception as e:
-        logger.error(f'Failed to send alert: {str(e)}')
-
 def preprocess_audio(audio_file_path):
     recognizer = sr.Recognizer()
     with sr.AudioFile(audio_file_path) as source:
@@ -191,6 +169,7 @@ def preprocess_audio(audio_file_path):
     try:
         text = recognizer.recognize_google(audio_data)
         keyword_detected = detect_keywords(text)
+        
     except sr.UnknownValueError:
         text = ""
         keyword_detected = False
@@ -229,7 +208,7 @@ def get_emotion_probs(filename):
 
         # Forward pass to get logits
         with torch.no_grad():
-            outputs = emotion_model(**inputs)
+            outputs = model(**inputs)
             logits = outputs.logits
 
         # Apply softmax to convert logits to probabilities
@@ -248,8 +227,7 @@ def get_emotion_probs(filename):
         logger.error(f'Error during local emotion recognition: {str(e)}')
         raise
 
-
-# Define an extensive list of keywords and phrases for help detection
+# Define a list of keywords and phrases for help detection
 keywords = [
     "help", "emergency", "assist", "danger", "scream", "rescue", "save me", "trouble", "call 911",
     "need help", "need assistance", "I'm in danger", "can't breathe", "can't move", "someone help",

@@ -7,28 +7,28 @@ export default function HomeScreen({ navigation }) {
   const handleSOSPress = async () => {
     console.log("SOS Clicked");
 
-    try {
-      const response = await fetch("http://192.168.144.23:5000/send-call", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    // try {
+    //   const response = await fetch("http://192.168.144.23:5000/send-call", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+    //   if (!response.ok) {
+    //     throw new Error(`HTTP error! Status: ${response.status}`);
+    //   }
 
-      const result = await response.json();
-      console.log("Call initiated:", result);
-      Alert.alert(
-        "Alert Sent",
-        "A call has been initiated to notify emergency services."
-      );
-    } catch (error) {
-      console.error("Failed to send call alert:", error);
-      Alert.alert("Error", "Failed to send call alert. Please try again.");
-    }
+    //   const result = await response.json();
+    //   console.log("Call initiated:", result);
+    //   Alert.alert(
+    //     "Alert Sent",
+    //     "A call has been initiated to notify emergency services."
+    //   );
+    // } catch (error) {
+    //   console.error("Failed to send call alert:", error);
+    //   Alert.alert("Error", "Failed to send call alert. Please try again.");
+    // }
   };
 
   return (

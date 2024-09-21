@@ -15,7 +15,7 @@ import { app } from "../../configure"; // Import initialized app
 // Initialize Firestore database
 const firestore = getFirestore(app);
 
-const RegisterScreen = () => {
+const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [email, setEmail] = useState("");
@@ -42,11 +42,6 @@ const RegisterScreen = () => {
       );
       const user = userCredential.user;
 
-      await sendEmailVerification(user);
-      Alert.alert(
-        `'Verification email sent', 'Please check your email to verify your account.'`
-      );
-
       // Save user details to Firestore
       await setDoc(doc(firestore, "users", user.uid), {
         name,
@@ -68,8 +63,8 @@ const RegisterScreen = () => {
       });
 
       Alert.alert("Registration Successful");
+      navigation.replace("Home");
       console.log("User registered");
-      navigation.navigate("Home");
     } catch (error) {
       Alert.alert("Registration Failed", "Check the details entered");
       console.log(error);

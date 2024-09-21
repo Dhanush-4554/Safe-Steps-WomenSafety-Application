@@ -16,7 +16,8 @@ const ProfileScreen = ({ navigation }) => {
         const user = auth.currentUser; // Get the current logged-in user
         if (user) {
           // Fetch user data from Firestore using user.uid
-          const userDocRef = doc(firestore, "users", user.uid);
+          const userId = auth.currentUser.uid;
+          const userDocRef = doc(firestore, "users", userId);
           const userDoc = await getDoc(userDocRef);
 
           if (userDoc.exists()) {
@@ -24,6 +25,8 @@ const ProfileScreen = ({ navigation }) => {
           } else {
             Alert.alert("Error", "User data not found");
           }
+        } else {
+          Alert.alert("No user login", "User has not login");
         }
       } catch (error) {
         Alert.alert("Error", error.message);
@@ -48,7 +51,7 @@ const ProfileScreen = ({ navigation }) => {
       <Text style={styles.label}>Name: {userData.name}</Text>
       <Text style={styles.label}>Gender: {userData.gender}</Text>
       <Text style={styles.label}>Email: {userData.email}</Text>
-      <Text style={styles.label}>Phone Number: {userData.phone}</Text>{" "}
+      <Text style={styles.label}>Phone Number: {userData.phone}</Text>
       {/* Display phone number */}
       <Text style={styles.title}>Trusted Person 1</Text>
       <Text style={styles.label}>Name: {userData.trustedPersons[0].name}</Text>
@@ -73,7 +76,7 @@ const ProfileScreen = ({ navigation }) => {
             .signOut()
             .then(() => {
               Alert.alert("Logged Out");
-              navigation.navigate("Login"); // Navigate back to the login screen
+              navigation.navigate("Landing"); // Navigate back to the login screen
             })
             .catch((error) => {
               Alert.alert("Error", error.message);

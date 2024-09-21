@@ -23,13 +23,17 @@ export default function LoginScreen() {
       const user = userCredential.user;
 
       // Navigate to Profile Screen after successful login
-      navigation.navigate("Profile");
+      navigation.navigate("Home");
     } catch (error) {
       console.error("Login failed:", error);
       Alert.alert("Login Failed", error.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRegister = async () => {
+    navigation.navigate("Register");
   };
 
   return (
@@ -57,6 +61,8 @@ export default function LoginScreen() {
         title={loading ? "Logging in..." : "Login"}
         onPress={handleLogin}
       />
+
+      <Button title="Register" onPress={handleRegister} />
     </View>
   );
 }

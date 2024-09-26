@@ -14,7 +14,11 @@ const AuthStack = () => {
   return (
     <Stack.Navigator initialRouteName="Landing">
       <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="Landing" component={Landing} />
+      <Stack.Screen
+        name="Landing"
+        component={Landing}
+        options={{ headerShown: false }} // Hide header for Landing page
+      />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="NightSupport" component={NightSupportScreen} />

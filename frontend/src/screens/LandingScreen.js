@@ -1,4 +1,11 @@
-import { StyleSheet, Text, Image, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  Image,
+  TouchableOpacity,
+  View,
+  ScrollView,
+} from "react-native";
 import React from "react";
 import { useFonts } from "expo-font";
 
@@ -17,41 +24,51 @@ const Landing = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.mainContainer}>
-      <Text style={styles.mainHeader}>SAFE STEPS</Text>
-      <Text style={styles.subHeader}>
-        Stay safe, stay strong, stay empowered.
-      </Text>
-      <Image
-        source={require("../../assets/women_ico.png")}
-        style={styles.image}
-      />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.buttonStyle}
-          onPress={() => navigation.navigate("Home")}
-        >
-          <Text style={styles.buttonText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.buttonStyle}
-          onPress={() => navigation.navigate("Login")}
-        >
-          <Text style={styles.buttonText}> Login </Text>
-        </TouchableOpacity>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.mainContainer}>
+        <Text style={styles.mainHeader}>SAFE STEPS</Text>
+        <Text style={styles.subHeader}>
+          Stay safe, stay strong, stay empowered.
+        </Text>
+        <Image
+          source={require("../../assets/women_ico.png")}
+          style={styles.image}
+        />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.buttonStyle}
+            onPress={() => navigation.navigate("Home")}
+          >
+            <Text style={styles.buttonText}>Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.buttonStyle}
+            onPress={() => navigation.navigate("Login")}
+          >
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FF5A5F", // Apply background color to entire scrollable area
+    width: "100%", // Ensure the container takes full width
+  },
   mainContainer: {
     flex: 1,
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#FF5A5F",
-    paddingTop: 10,
+    backgroundColor: "#FF5A5F", // Ensure the background is applied here too
+    paddingTop: 55,
     paddingBottom: 30,
+    width: "100%", // Ensure this container also spans the full width of the screen
   },
   buttonContainer: {
     width: "100%",

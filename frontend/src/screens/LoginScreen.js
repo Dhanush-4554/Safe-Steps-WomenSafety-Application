@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from "react-native";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth"; // Import Firebase Auth
 import { useNavigation } from "@react-navigation/native";
 
@@ -57,12 +64,22 @@ export default function LoginScreen() {
         secureTextEntry
       />
 
-      <Button
-        title={loading ? "Logging in..." : "Login"}
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: "#fff" }]}
         onPress={handleLogin}
-      />
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>
+          {loading ? "Logging in..." : "Login"}
+        </Text>
+      </TouchableOpacity>
 
-      <Button title="Register" onPress={handleRegister} />
+      <Text style={styles.promptText}>
+        New around here?
+        <Text style={styles.registerText} onPress={handleRegister}>
+          Join us today
+        </Text>
+      </Text>
     </View>
   );
 }
@@ -72,19 +89,44 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 20,
-    backgroundColor: "#fff",
+    //backgroundColor: "#F95959",
+    backgroundColor: "#F95959", // Match background color to the landing page
   },
   title: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: "bold",
+    color: "#fff", // White text to match the landing page
     marginBottom: 20,
     textAlign: "center",
   },
   input: {
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: "#fff", // White underline for input fields
     marginBottom: 20,
     paddingVertical: 8,
     paddingHorizontal: 10,
+    color: "#fff", // White text for input fields
+  },
+  button: {
+    backgroundColor: "#FFB830", // Use the same button color from the landing page
+    paddingVertical: 12,
+    borderRadius: 30,
+    marginVertical: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#F95959", // Match button text color to the landing page
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  promptText: {
+    color: "#fff",
+    marginTop: 20,
+    textAlign: "center",
+    fontSize: 18,
+  },
+  registerText: {
+    color: "#FFB830", // Highlight the "Register" text in button color
+    fontWeight: "bold",
   },
 });

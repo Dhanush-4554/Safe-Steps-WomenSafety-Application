@@ -10,7 +10,7 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import {
   createUserWithEmailAndPassword,
-  sendEmailVerification,
+  fetchSignInMethodsForEmail, // Fetch sign-in methods for email existence check
 } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore"; // Firestore functions
 import Input from "../components/Input";
@@ -59,6 +59,8 @@ const RegisterScreen = ({ navigation }) => {
     if (!phone || !validatePhone(phone))
       newErrors.phone = "Valid 10-digit phone number is required.";
     if (!password) newErrors.password = "Password is required.";
+
+    // Trusted Person 1 validations
     if (!trustedPerson1.name.trim())
       newErrors.trustedPerson1Name = "Trusted Person 1 name is required.";
     if (!trustedPerson1.gender)
@@ -66,6 +68,8 @@ const RegisterScreen = ({ navigation }) => {
     if (!trustedPerson1.phone || !validatePhone(trustedPerson1.phone))
       newErrors.trustedPerson1Phone =
         "Valid Trusted Person 1 phone number is required.";
+
+    // Trusted Person 2 validations
     if (!trustedPerson2.name.trim())
       newErrors.trustedPerson2Name = "Trusted Person 2 name is required.";
     if (!trustedPerson2.gender)
@@ -74,51 +78,85 @@ const RegisterScreen = ({ navigation }) => {
       newErrors.trustedPerson2Phone =
         "Valid Trusted Person 2 phone number is required.";
 
+    // Check if Trusted Person 1 and 2 details are identical
+    if (
+      trustedPerson1.name.trim() === trustedPerson2.name.trim() &&
+      trustedPerson1.phone.trim() === trustedPerson2.phone.trim() &&
+      trustedPerson1.gender === trustedPerson2.gender
+    ) {
+      newErrors.trustedPersonDuplicate =
+        "Trusted Person 1 and 2 cannot be the same.";
+    }
+
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
   };
 
+  // Function to check if email already exists
+  const checkEmailExists = async () => {
+    try {
+      const signInMethods = await fetchSignInMethodsForEmail(auth, email);
+      if (signInMethods.length > 0) {
+        // Email already exists
+        Alert.alert(
+          "Account Exists",
+          "This email is already registered. Please log in."
+        );
+        navigation.navigate("Login"); // Navigate to Login screen
+        return false;
+      }
+      return true;
+    } catch (error) {
+      Alert.alert("Error", error.message);
+      return false;
+    }
+  };
+
+  // Function to handle registration
   const handleRegister = async () => {
     if (!validateForm()) {
       Alert.alert("Registration Failed", "Please correct the errors.");
       return;
     }
 
-    try {
-      // Create the user in Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
+    // Check if the email already exists
+    if (await checkEmailExists()) {
+      try {
+        // Create the user in Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userCredential.user;
 
-      // Save user details to Firestore
-      await setDoc(doc(firestore, "users", user.uid), {
-        name,
-        gender,
-        email,
-        phone,
-        trustedPersons: [
-          {
-            name: trustedPerson1.name,
-            gender: trustedPerson1.gender,
-            phone: trustedPerson1.phone,
-          },
-          {
-            name: trustedPerson2.name,
-            gender: trustedPerson2.gender,
-            phone: trustedPerson2.phone,
-          },
-        ],
-      });
+        // Save user details to Firestore
+        await setDoc(doc(firestore, "users", user.uid), {
+          name,
+          gender,
+          email,
+          phone,
+          trustedPersons: [
+            {
+              name: trustedPerson1.name,
+              gender: trustedPerson1.gender,
+              phone: trustedPerson1.phone,
+            },
+            {
+              name: trustedPerson2.name,
+              gender: trustedPerson2.gender,
+              phone: trustedPerson2.phone,
+            },
+          ],
+        });
 
-      Alert.alert("Registration Successful");
-      navigation.replace("Home");
-    } catch (error) {
-      Alert.alert("Registration Failed", "Please try again later.");
-      console.log(error);
+        Alert.alert("Registration Successful");
+        navigation.replace("Home");
+      } catch (error) {
+        Alert.alert("Registration Failed", "Please try again later.");
+        console.log(error);
+      }
     }
   };
 
@@ -240,6 +278,10 @@ const RegisterScreen = ({ navigation }) => {
           }
         />
 
+        {errors.trustedPersonDuplicate && (
+          <Text style={styles.errorText}>{errors.trustedPersonDuplicate}</Text>
+        )}
+
         <Button title="Register" onPress={handleRegister} />
       </View>
     </ScrollView>
@@ -252,12 +294,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   container: {
-    padding: 20,
+    padding: 16,
   },
   errorText: {
     color: "red",
-    fontSize: 12,
-    marginBottom: 2,
   },
 });
 

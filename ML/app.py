@@ -44,6 +44,46 @@ feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained(model_name)
 def home():
     return jsonify({'message': 'Flask server is running!'})
 
+def send_call():
+    try:
+        live_location = "https://maps-eta-gilt.vercel.app/map"
+        twiml = VoiceResponse()
+        twiml.say(voice='alice', message='Hello! Your friend might be in big trouble. Please check the SMS message.')
+
+        call = client.calls.create(
+            twiml=twiml,
+            to='+916361304218',
+            from_='+16122844698'
+        )
+        logger.error(f'Call initiated. Call SID: {call.sid}')
+
+    except Exception as e:
+        logger.error(f'Failed to send call alert: {str(e)}')
+
+@app.route('/send-call', methods=['POST'])
+def send_call_endpoint():
+    try:
+        send_call()
+        return jsonify({'message': 'Call initiated successfully.'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+def send_sms():
+    try:
+        live_location = "https://maps-eta-gilt.vercel.app/map"
+
+        client.messages.create(
+            from_='+16122844698',
+            to='+916361304218',
+            body=f'Your friend is in big trouble, please check out the link: {live_location}'
+        )
+        logger.error('SMS alert sent successfully.')
+
+    except Exception as e:
+        logger.error(f'Failed to send SMS alert: {str(e)}')
+
+
+
 # Asynchronous Twilio SMS function
 async def async_send_sms():
     try:

@@ -9,7 +9,7 @@ export default function HomeScreen({ navigation }) {
     console.log("SOS Clicked");
 
     try {
-      const response = await fetch("http://192.168.144.23:5000/send-call", {
+      const response = await fetch("http://192.168.29.34:5000/send-call", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -17,6 +17,7 @@ export default function HomeScreen({ navigation }) {
       });
 
       if (!response.ok) {
+        console.log("activated");
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 

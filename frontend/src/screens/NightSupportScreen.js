@@ -6,22 +6,36 @@ import {
   TouchableOpacity,
   Text,
   Alert,
-  Button,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Audio } from "expo-av";
 import * as Location from "expo-location";
 import { database } from "../../configure"; // Import the configured Firebase
 import { ref, set, onValue } from "firebase/database";
-import { Audio } from "expo-av";
 
 export default function NightSupportScreen({ navigation }) {
   const [isEnabled, setIsEnabled] = useState(false);
   const [location, setLocation] = useState(null);
   const [intervalId, setIntervalId] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [isMicEnabled, setIsMicEnabled] = useState(false); // State for microphone control
+  const [isMicEnabled, setIsMicEnabled] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const recordingRef = useRef(null);
+
+  //ionicons
+
+  // Request microphone permission using Audio API
+  const getMicrophonePermission = async () => {
+    const { status } = await Audio.requestPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert(
+        "Permission Denied",
+        "We need microphone permissions to enable this feature."
+      );
+      return false;
+    }
+    return true;
+  };
 
   const toggleSwitch = () => {
     setIsEnabled((previousState) => !previousState);
@@ -50,7 +64,7 @@ export default function NightSupportScreen({ navigation }) {
     }
 
     try {
-      const response = await fetch("http://192.168.241.201:5000/send-sms", {
+      const response = await fetch("http://192.168.29.34:5000/send-sms", {
         method: "POST",
       });
       if (!response.ok) {
@@ -100,6 +114,12 @@ export default function NightSupportScreen({ navigation }) {
   };
 
   const enableMic = async () => {
+    const hasPermission = await getMicrophonePermission(); // Check permission before enabling mic
+
+    if (!hasPermission) {
+      return;
+    }
+
     try {
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
@@ -172,25 +192,18 @@ export default function NightSupportScreen({ navigation }) {
         });
 
         try {
-          const response = await fetch("http://192.168.241.201:5000/predict", {
+          const response = await fetch("http://192.168.29.34:5000/predict", {
             method: "POST",
             body: formData,
           });
-
-          // If needed, you can log the server response for debugging purposes
-          // const result = await response.json();
-          // console.log('Server response:', result);
         } catch (uploadError) {
-          // Handle upload errors silently
-          console.error("Failed to upload audio:", uploadError);
+          console.log("Failed to upload audio:", uploadError);
         }
       }
 
-      // Wait for 5 seconds before starting the next recording
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // delay
     } catch (error) {
-      // Handle recording errors silently
-      console.error("Failed to record audio:", error);
+      console.log("Failed to record audio:", error);
     } finally {
       if (recording) {
         recording = null;

@@ -23,6 +23,8 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app)
 
+# /send-call
+
 # Twilio credentials
 account_sid = "AC7f41acdba81736c349ab2a60622b97a4"
 auth_token = "fc69f0823f5a7a4d031a48c6d9ab4440"
@@ -50,7 +52,7 @@ async def async_send_sms():
         live_location = "https://maps-eta-gilt.vercel.app/map"
         await client.messages.create(
             from_='+16122844698',
-            to='+916361304218',
+            to='+918618541131',
             body=f'Your friend is in big trouble, please check out the link: {live_location}'
         )
     except Exception as e:
@@ -65,7 +67,7 @@ async def async_send_call():
 
         await client.calls.create(
             twiml=twiml,
-            to='+916361304218',
+            to='+918618541131',
             from_='+16122844698'
         )
     except Exception as e:

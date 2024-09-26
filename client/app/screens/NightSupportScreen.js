@@ -50,7 +50,7 @@ export default function NightSupportScreen({ navigation }) {
     }
 
     try {
-      const response = await fetch("http://192.168.241.201:5000/send-sms", {
+      const response = await fetch("http://192.168.29.34:5000/send-sms", {
         method: "POST",
       });
       if (!response.ok) {
@@ -172,7 +172,7 @@ export default function NightSupportScreen({ navigation }) {
         });
 
         try {
-          const response = await fetch("http://192.168.241.201:5000/predict", {
+          const response = await fetch("http://192.168.29.34:5000/predict", {
             method: "POST",
             body: formData,
           });
@@ -182,7 +182,7 @@ export default function NightSupportScreen({ navigation }) {
           // console.log('Server response:', result);
         } catch (uploadError) {
           // Handle upload errors silently
-          console.error("Failed to upload audio:", uploadError);
+          console.log("Failed to upload audio:", uploadError);
         }
       }
 
@@ -190,7 +190,7 @@ export default function NightSupportScreen({ navigation }) {
       await new Promise((resolve) => setTimeout(resolve, 5000));
     } catch (error) {
       // Handle recording errors silently
-      console.error("Failed to record audio:", error);
+      console.log("Failed to record audio:", error);
     } finally {
       if (recording) {
         recording = null;

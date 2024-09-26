@@ -4,19 +4,19 @@
     "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/women-icon.png",
+    "icon": "./assets/women_ico.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash-overlay.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
+      "permissions": [
+        "RECORD_AUDIO"
+      ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/women-icon.png",
+        "foregroundImage": "./assets/women_ico.png",
         "backgroundColor": "#ffffff"
       }
     },

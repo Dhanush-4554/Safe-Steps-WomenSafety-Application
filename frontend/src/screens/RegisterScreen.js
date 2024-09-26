@@ -6,6 +6,8 @@ import {
   Alert,
   ScrollView,
   Text,
+  TextInput,
+  TouchableOpacity,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import {
@@ -165,12 +167,13 @@ const RegisterScreen = ({ navigation }) => {
       <View style={styles.container}>
         {/* User Details */}
         {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
-        <Input placeholder="Name" value={name} onChangeText={setName} />
+        <TextInput placeholder="Name" value={name} onChangeText={setName} style={styles.input}/>
 
         {errors.gender && <Text style={styles.errorText}>{errors.gender}</Text>}
         <Picker
           selectedValue={gender}
           onValueChange={(itemValue) => setGender(itemValue)}
+          style={styles.pickerContainer}
         >
           <Picker.Item label="Select Gender" value="" />
           <Picker.Item label="Male" value="male" />
@@ -179,37 +182,40 @@ const RegisterScreen = ({ navigation }) => {
         </Picker>
 
         {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-        <Input placeholder="Email" value={email} onChangeText={setEmail} />
+        <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input}/>
 
         {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
-        <Input
+        <TextInput
           placeholder="Phone Number"
           keyboardType="phone-pad" // This will display the number pad
           maxLength={10}
           value={phone}
           onChangeText={setPhone}
+          style={styles.input}
         />
 
         {errors.password && (
           <Text style={styles.errorText}>{errors.password}</Text>
         )}
-        <Input
+        <TextInput
           placeholder="Password"
           secureTextEntry
           value={password}
           onChangeText={setPassword}
+          style={styles.input}
         />
 
         {/* Trusted Person 1 */}
         {errors.trustedPerson1Name && (
           <Text style={styles.errorText}>{errors.trustedPerson1Name}</Text>
         )}
-        <Input
+        <TextInput
           placeholder="Trusted Person 1 Name"
           value={trustedPerson1.name}
           onChangeText={(text) =>
             setTrustedPerson1({ ...trustedPerson1, name: text })
           }
+          style={styles.input}
         />
 
         {errors.trustedPerson1Gender && (
@@ -220,6 +226,7 @@ const RegisterScreen = ({ navigation }) => {
           onValueChange={(itemValue) =>
             setTrustedPerson1({ ...trustedPerson1, gender: itemValue })
           }
+          style={styles.pickerContainer}
         >
           <Picker.Item label="Select Gender" value="" />
           <Picker.Item label="Male" value="male" />
@@ -230,25 +237,27 @@ const RegisterScreen = ({ navigation }) => {
         {errors.trustedPerson1Phone && (
           <Text style={styles.errorText}>{errors.trustedPerson1Phone}</Text>
         )}
-        <Input
+        <TextInput
           placeholder="Trusted Person 1 Phone"
           value={trustedPerson1.phone}
           keyboardType="phone-pad"
           onChangeText={(text) =>
             setTrustedPerson1({ ...trustedPerson1, phone: text })
           }
+          style={styles.input}
         />
 
         {/* Trusted Person 2 */}
         {errors.trustedPerson2Name && (
           <Text style={styles.errorText}>{errors.trustedPerson2Name}</Text>
         )}
-        <Input
+        <TextInput
           placeholder="Trusted Person 2 Name"
           value={trustedPerson2.name}
           onChangeText={(text) =>
             setTrustedPerson2({ ...trustedPerson2, name: text })
           }
+          style={styles.input}
         />
 
         {errors.trustedPerson2Gender && (
@@ -259,6 +268,7 @@ const RegisterScreen = ({ navigation }) => {
           onValueChange={(itemValue) =>
             setTrustedPerson2({ ...trustedPerson2, gender: itemValue })
           }
+          style={styles.pickerContainer}
         >
           <Picker.Item label="Select Gender" value="" />
           <Picker.Item label="Male" value="male" />
@@ -269,20 +279,25 @@ const RegisterScreen = ({ navigation }) => {
         {errors.trustedPerson2Phone && (
           <Text style={styles.errorText}>{errors.trustedPerson2Phone}</Text>
         )}
-        <Input
+        <TextInput
           placeholder="Trusted Person 2 Phone"
           value={trustedPerson2.phone}
           keyboardType="phone-pad"
           onChangeText={(text) =>
             setTrustedPerson2({ ...trustedPerson2, phone: text })
           }
+          style={styles.input}
         />
 
         {errors.trustedPersonDuplicate && (
           <Text style={styles.errorText}>{errors.trustedPersonDuplicate}</Text>
         )}
 
-        <Button title="Register" onPress={handleRegister} />
+        <TouchableOpacity title="Register" onPress={handleRegister} style={styles.button} >
+        <Text style={styles.buttonText}>
+          Register
+        </Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -294,10 +309,41 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   container: {
-    padding: 16,
+    flex: 1,
+    backgroundColor:"#FF5A5F",
+    padding: 20,
   },
   errorText: {
-    color: "red",
+    color: "white",
+  },
+  input: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#fff", // White underline for input fields
+    marginBottom: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    color: "black", // White text for input fields
+  },
+  button: {
+    backgroundColor: "white", // Use the same button color from the landing page
+    paddingVertical: 12,
+    borderRadius: 30,
+    marginVertical: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#F95959", // Match button text color to the landing page
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  pickerContainer: {
+    height: 40,
+    borderColor: "#fff",
+    borderWidth: 1,
+    borderRadius: 5,
+    justifyContent: "center",
+    marginBottom: 15,
+    
   },
 });
 

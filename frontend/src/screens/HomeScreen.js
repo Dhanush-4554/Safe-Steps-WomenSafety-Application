@@ -2,14 +2,13 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import SOSButton from "../components/SOSButton";
-import ToggleSwitch from "../components/ToggleSwitch";
 
 export default function HomeScreen({ navigation }) {
   const handleSOSPress = async () => {
     console.log("SOS Clicked");
 
     try {
-      const response = await fetch("http://192.168.29.34:5000/send-call", {
+      const response = await fetch("http://192.168.29.34:5000/send-alerts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -17,7 +16,6 @@ export default function HomeScreen({ navigation }) {
       });
 
       if (!response.ok) {
-        console.log("activated");
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 

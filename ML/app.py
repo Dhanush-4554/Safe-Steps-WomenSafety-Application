@@ -62,14 +62,6 @@ def send_call():
     except Exception as e:
         logger.error(f'Failed to send call alert: {str(e)}')
 
-@app.route('/send-call', methods=['POST'])
-def send_call_endpoint():
-    try:
-        send_call()
-        return jsonify({'message': 'Call initiated successfully.'}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 def send_sms():
     try:
         live_location = "https://maps-eta-gilt.vercel.app/map"
@@ -83,6 +75,25 @@ def send_sms():
 
     except Exception as e:
         logger.error(f'Failed to send SMS alert: {str(e)}')
+
+
+
+@app.route('/send-call', methods=['POST'])
+def send_call_endpoint():
+    try:
+        send_call()
+        send_sms()
+        return jsonify({'message': 'Call and SMS initiated successfully.'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/send-sms', methods=['POST'])
+def send_sms_endpoint():
+    try:
+        send_sms()
+        return jsonify({'message': 'SMS sent successfully.'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 

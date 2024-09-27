@@ -61,6 +61,13 @@ export default function HomeScreen({ navigation }) {
           <Ionicons name="person" size={24} color="#FF5A5F" />
           <Text style={styles.buttonText}>Profile</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("service")}
+          style={styles.button}
+        >
+          <Ionicons name="sevice" size={24} color="#FF5A5F" />
+          <Text style={styles.buttonText}>services</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

@@ -54,7 +54,7 @@ def send_call():
 
         call = client.calls.create(
             twiml=twiml,
-            to='+916361304218',
+            to='+9194481214',
             from_='+16122844698'
         )
         logger.error(f'Call initiated. Call SID: {call.sid}')
@@ -68,7 +68,7 @@ def send_sms():
 
         client.messages.create(
             from_='+16122844698',
-            to='+916361304218',
+            to='+9194481214',
             body=f'Your friend is in big trouble, please check out the link: {live_location}'
         )
         logger.error('SMS alert sent successfully.')
@@ -103,7 +103,7 @@ async def async_send_sms():
         live_location = "https://maps-eta-gilt.vercel.app/map"
         await client.messages.create(
             from_='+16122844698',
-            to='+918618541131',
+            to='+9194481214',
             body=f'Your friend is in big trouble, please check out the link: {live_location}'
         )
     except Exception as e:
@@ -118,7 +118,7 @@ async def async_send_call():
 
         await client.calls.create(
             twiml=twiml,
-            to='+918618541131',
+            to='+9194481214',
             from_='+16122844698'
         )
     except Exception as e:

@@ -64,7 +64,7 @@ export default function NightSupportScreen({ navigation }) {
     }
 
     try {
-      const response = await fetch("http://192.168.29.34:5000/send-sms", {
+      const response = await fetch("http://10.1.6.189:5000/send-sms", {
         method: "POST",
       });
       if (!response.ok) {
@@ -192,7 +192,7 @@ export default function NightSupportScreen({ navigation }) {
         });
 
         try {
-          const response = await fetch("http://192.168.29.34:5000/predict", {
+          const response = await fetch("http://10.1.6.189:5000/predict", {
             method: "POST",
             body: formData,
           });

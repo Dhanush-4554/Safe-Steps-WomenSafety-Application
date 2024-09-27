@@ -37,15 +37,9 @@ const Landing = ({ navigation }) => {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.buttonStyle}
-            onPress={() => navigation.navigate("Home")}
-          >
-            <Text style={styles.buttonText}>Home</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.buttonStyle}
             onPress={() => navigation.navigate("Login")}
           >
-            <Text style={styles.buttonText}>Login</Text>
+            <Text style={styles.buttonText}>Get Started</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -86,7 +80,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-    width: 150,
+    width: 370,
     marginTop: 10,
   },
   buttonText: {

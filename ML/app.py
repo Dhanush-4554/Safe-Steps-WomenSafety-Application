@@ -54,7 +54,14 @@ def send_call():
 
         call = client.calls.create(
             twiml=twiml,
-            to='+9194481214',
+            to='+917483523450',
+            from_='+16122844698'
+        )
+        logger.error(f'Call initiated. Call SID: {call.sid}')
+
+        call = client.calls.create(
+            twiml=twiml,
+            to='+916361304218',
             from_='+16122844698'
         )
         logger.error(f'Call initiated. Call SID: {call.sid}')
@@ -68,7 +75,14 @@ def send_sms():
 
         client.messages.create(
             from_='+16122844698',
-            to='+9194481214',
+            to='+917483523450',
+            body=f'Your friend is in big trouble, please check out the link: {live_location}'
+        )
+        logger.error('SMS alert sent successfully.')
+
+        client.messages.create(
+            from_='+16122844698',
+            to='+916361304218',
             body=f'Your friend is in big trouble, please check out the link: {live_location}'
         )
         logger.error('SMS alert sent successfully.')
@@ -103,7 +117,13 @@ async def async_send_sms():
         live_location = "https://maps-eta-gilt.vercel.app/map"
         await client.messages.create(
             from_='+16122844698',
-            to='+9194481214',
+            to='+917483523450',
+            body=f'Your friend is in big trouble, please check out the link: {live_location}'
+        )
+
+        await client.messages.create(
+            from_='+16122844698',
+            to='+916361304218',
             body=f'Your friend is in big trouble, please check out the link: {live_location}'
         )
     except Exception as e:
@@ -118,7 +138,12 @@ async def async_send_call():
 
         await client.calls.create(
             twiml=twiml,
-            to='+9194481214',
+            to='+917483523450',
+            from_='+16122844698'
+        )
+        await client.calls.create(
+            twiml=twiml,
+            to='+916361304218',
             from_='+16122844698'
         )
     except Exception as e:

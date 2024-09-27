@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Text,
   Alert,
+  Button,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Audio } from "expo-av";
@@ -22,7 +23,65 @@ export default function NightSupportScreen({ navigation }) {
   const [isRecording, setIsRecording] = useState(false);
   const recordingRef = useRef(null);
 
-  //ionicons
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //For enable and disable feature
+
+  const [isPredicting, setIsPredicting] = useState(false);
+  const [countdown, setCountdown] = useState(10); // 10 seconds countdown
+  const [isCancelled, setIsCancelled] = useState(false);
+
+  //this the function for the delay feature
+
+  const startPrediction = async () => {
+    setIsPredicting(true);
+    setCountdown(10);
+    setIsCancelled(false);
+
+    // Start the countdown
+    const countdownInterval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev === 1) {
+          clearInterval(countdownInterval);
+          if (!isCancelled) {
+            // Proceed with the backend call after the countdown finishes
+            triggerPrediction();
+          }
+        }
+        return prev - 1;
+      });
+    }, 1000); // decrease countdown every second
+  };
+
+  const triggerPrediction = async () => {
+    try {
+      const response = await fetch("http://<your-backend-url>/confirm-call", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await response.json();
+      console.log("Call confirmation:", data);
+    } catch (error) {
+      console.error("Error confirming call:", error);
+    }
+  };
+
+  const cancelPrediction = async () => {
+    setIsCancelled(true);
+    setIsPredicting(false);
+
+    try {
+      await fetch("http://<your-backend-url>/cancel-call", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log("Prediction canceled.");
+    } catch (error) {
+      console.error("Error canceling prediction:", error);
+    }
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
 
   // Request microphone permission using Audio API
   const getMicrophonePermission = async () => {
@@ -196,6 +255,8 @@ export default function NightSupportScreen({ navigation }) {
             method: "POST",
             body: formData,
           });
+
+          console.error(response);
         } catch (uploadError) {
           console.log("Failed to upload audio:", uploadError);
         }
@@ -251,6 +312,20 @@ export default function NightSupportScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+
+      <View>
+        {isPredicting ? (
+          <View>
+            <Text>Predicting... Countdown: {countdown}s</Text>
+            <Button title="Cancel Prediction" onPress={cancelPrediction} />
+          </View>
+        ) : (
+          <Button title="Start Prediction" onPress={startPrediction} />
+        )}
+      </View>
+
+      {/* /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
       <Text style={styles.title}>Night Support Mode</Text>
       <Text style={styles.subtitle}>
         Toggle to enable night mode for better night-time safety.
@@ -300,7 +375,7 @@ export default function NightSupportScreen({ navigation }) {
       {/* Footer section */}
       <View style={styles.footer}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("Home")}
+          onPress={() => navigation.navigate("homeTemp")}
           style={styles.button}
         >
           <Ionicons name="home" size={24} color="#FF5A5F" />

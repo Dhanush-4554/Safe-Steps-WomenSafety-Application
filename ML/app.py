@@ -64,6 +64,19 @@ def send_call():
             to='+916361304218',
             from_='+16122844698'
         )
+
+        # call = client.calls.create(
+        #     twiml=twiml,
+        #     to='112',
+        #     from_='+16122844698'
+        # )
+
+        # call = client.calls.create(
+        #     twiml=twiml,
+        #     to='{control}',
+        #     from_='+16122844698'
+        # )
+
         logger.error(f'Call initiated. Call SID: {call.sid}')
 
     except Exception as e:
@@ -85,6 +98,18 @@ def send_sms():
             to='+916361304218',
             body=f'Your friend is in big trouble, please check out the link: {live_location}'
         )
+
+        # client.messages.create(
+        #     from_='+16122844698',
+        #     to='+916361304218',
+        #     body=f'Your friend is in big trouble, please check out the link: {live_location}'
+        # )
+
+        # client.messages.create(
+        #     from_='+16122844698',
+        #     to='{control}',
+        #     body=f'Your friend is in big trouble, please check out the link: {live_location}'
+        # )
         logger.error('SMS alert sent successfully.')
 
     except Exception as e:
@@ -156,6 +181,35 @@ async def send_alerts():
         return jsonify({'message': 'Alerts sent successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+###########################################################################################################
+
+
+call_initiated = False
+
+@app.route('/confirm-call', methods=['POST'])
+def confirm_call():
+    global call_initiated
+    if not call_initiated:
+        try:
+            # Proceed with sending the call and SMS
+            send_call()
+            send_sms()
+            call_initiated = True
+            return jsonify({'message': 'Call and SMS initiated successfully.'}), 200
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
+    else:
+        return jsonify({'message': 'Call already initiated.'}), 200
+
+@app.route('/cancel-call', methods=['POST'])
+def cancel_call():
+    global call_initiated
+    call_initiated = False
+    return jsonify({'message': 'Call initiation canceled.'}), 200
+
+
+##########################################################################################################
 
 @app.route('/predict', methods=['POST'])
 def predict():

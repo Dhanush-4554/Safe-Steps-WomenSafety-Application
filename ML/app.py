@@ -184,7 +184,7 @@ async def send_alerts():
 
 ###########################################################################################################
 
-
+alert_cancelled = False
 call_initiated = False
 
 @app.route('/confirm-call', methods=['POST'])
@@ -192,10 +192,9 @@ def confirm_call():
     global call_initiated
     if not call_initiated:
         try:
-            # Proceed with sending the call and SMS
-            send_call()
-            send_sms()
+
             call_initiated = True
+            print("Call the send_alert function")
             return jsonify({'message': 'Call and SMS initiated successfully.'}), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500

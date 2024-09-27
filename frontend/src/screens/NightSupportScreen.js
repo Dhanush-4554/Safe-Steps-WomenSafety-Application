@@ -32,37 +32,48 @@ export default function NightSupportScreen({ navigation }) {
   const [isCancelled, setIsCancelled] = useState(false);
 
   //this the function for the delay feature
+  useEffect(() => {
+    let countdownInterval = null;
 
-  const startPrediction = async () => {
+    if (isPredicting && countdown > 0 && !isCancelled) {
+      countdownInterval = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+    }
+
+    if (countdown === 0) {
+      clearInterval(countdownInterval);
+      if (!isCancelled) {
+        // Proceed with the backend call after the countdown finishes
+        triggerPrediction();
+      }
+    }
+
+    // Clear the interval when countdown finishes or when the component unmounts
+    return () => clearInterval(countdownInterval);
+  }, [isPredicting, countdown, isCancelled]);
+
+  const startPrediction = () => {
     setIsPredicting(true);
     setCountdown(10);
     setIsCancelled(false);
-
-    // Start the countdown
-    const countdownInterval = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev === 1) {
-          clearInterval(countdownInterval);
-          if (!isCancelled) {
-            // Proceed with the backend call after the countdown finishes
-            triggerPrediction();
-          }
-        }
-        return prev - 1;
-      });
-    }, 1000); // decrease countdown every second
   };
 
   const triggerPrediction = async () => {
     try {
-      const response = await fetch("http://<your-backend-url>/confirm-call", {
+      const response = await fetch("http://10.1.6.189:5000/confirm-call", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ file: "<audio-file-data>" }), // Replace with your audio file data
       });
+
       const data = await response.json();
-      console.log("Call confirmation:", data);
+      console.log("Prediction Result:", data);
+      // Reset after prediction completes
+      setIsPredicting(false);
     } catch (error) {
-      console.error("Error confirming call:", error);
+      console.error("Error triggering prediction:", error);
+      setIsPredicting(false);
     }
   };
 
@@ -71,7 +82,7 @@ export default function NightSupportScreen({ navigation }) {
     setIsPredicting(false);
 
     try {
-      await fetch("http://<your-backend-url>/cancel-call", {
+      await fetch("http://10.1.6.189:5000/cancel-call", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
@@ -255,8 +266,6 @@ export default function NightSupportScreen({ navigation }) {
             method: "POST",
             body: formData,
           });
-
-          console.error(response);
         } catch (uploadError) {
           console.log("Failed to upload audio:", uploadError);
         }

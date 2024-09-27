@@ -55,6 +55,20 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.buttonText}>Night Support</Text>
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={() => navigation.navigate("service")}
+          style={styles.button}
+        >
+          <Ionicons name="settings-sharp" size={24} color="#FF5A5F" />
+          <Text style={styles.buttonText}>Services</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("dialer")}
+          style={styles.button}
+        >
+          <Ionicons name="dialer" size={24} color="#FF5A5F" />
+          <Text style={styles.buttonText}>dialer</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
           onPress={() => navigation.navigate("Profile")}
           style={styles.button}
         >

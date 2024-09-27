@@ -48,13 +48,20 @@ def home():
 
 def send_call():
     try:
-        live_location = "https://maps-eta-gilt.vercel.app/map"
+        live_location = "https://disp-map.vercel.app/"
         twiml = VoiceResponse()
         twiml.say(voice='alice', message='Hello! Your friend might be in big trouble. Please check the SMS message.')
 
         call = client.calls.create(
             twiml=twiml,
-            to='+9194481214',
+            to='+917483523450',
+            from_='+16122844698'
+        )
+        logger.error(f'Call initiated. Call SID: {call.sid}')
+
+        call = client.calls.create(
+            twiml=twiml,
+            to='+916361304218',
             from_='+16122844698'
         )
         logger.error(f'Call initiated. Call SID: {call.sid}')
@@ -64,11 +71,18 @@ def send_call():
 
 def send_sms():
     try:
-        live_location = "https://maps-eta-gilt.vercel.app/map"
+        live_location = "https://disp-map.vercel.app/"
 
         client.messages.create(
             from_='+16122844698',
-            to='+9194481214',
+            to='+917483523450',
+            body=f'Your friend is in big trouble, please check out the link: {live_location}'
+        )
+        logger.error('SMS alert sent successfully.')
+
+        client.messages.create(
+            from_='+16122844698',
+            to='+916361304218',
             body=f'Your friend is in big trouble, please check out the link: {live_location}'
         )
         logger.error('SMS alert sent successfully.')
@@ -100,10 +114,16 @@ def send_sms_endpoint():
 # Asynchronous Twilio SMS function
 async def async_send_sms():
     try:
-        live_location = "https://maps-eta-gilt.vercel.app/map"
+        live_location = "https://disp-map.vercel.app/"
         await client.messages.create(
             from_='+16122844698',
-            to='+9194481214',
+            to='+917483523450',
+            body=f'Your friend is in big trouble, please check out the link: {live_location}'
+        )
+
+        await client.messages.create(
+            from_='+16122844698',
+            to='+916361304218',
             body=f'Your friend is in big trouble, please check out the link: {live_location}'
         )
     except Exception as e:
@@ -112,13 +132,18 @@ async def async_send_sms():
 # Asynchronous Twilio call function
 async def async_send_call():
     try:
-        live_location = "https://maps-eta-gilt.vercel.app/map"
+        live_location = "https://disp-map.vercel.app/"
         twiml = VoiceResponse()
         twiml.say(voice='alice', message='Hello! Your friend might be in big trouble. Please check the SMS message.')
 
         await client.calls.create(
             twiml=twiml,
-            to='+9194481214',
+            to='+917483523450',
+            from_='+16122844698'
+        )
+        await client.calls.create(
+            twiml=twiml,
+            to='+916361304218',
             from_='+16122844698'
         )
     except Exception as e:

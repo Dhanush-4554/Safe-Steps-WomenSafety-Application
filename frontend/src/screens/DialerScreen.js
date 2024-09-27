@@ -1,14 +1,29 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Button, Linking } from "react-native";
 import React from "react";
 
 const DialerScreen = ({ navigation }) => {
+  const handleEmergencyCall = () => {
+    const emergencyNumber = "112";
+    Linking.openURL(`tel:${emergencyNumber}`);
+  };
+
   return (
-    <View>
-      <Text>DialerScreen</Text>
+    <View style={styles.container}>
+      <Button
+        title="Call Emergency (112)"
+        onPress={handleEmergencyCall}
+        color="#FF0000"
+      />
     </View>
   );
 };
 
-export default DialerScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
 
-const styles = StyleSheet.create({});
+export default DialerScreen;

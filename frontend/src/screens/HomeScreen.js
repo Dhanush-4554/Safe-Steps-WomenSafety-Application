@@ -65,7 +65,7 @@ export default function HomeScreen({ navigation }) {
           onPress={() => navigation.navigate("dialer")}
           style={styles.button}
         >
-          <Ionicons name="dialer" size={24} color="#FF5A5F" />
+          <Ionicons name="call" size={24} color="#FF5A5F" />
           <Text style={styles.buttonText}>dialer</Text>
         </TouchableOpacity>
         <TouchableOpacity

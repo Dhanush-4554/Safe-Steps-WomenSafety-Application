@@ -9,6 +9,7 @@ import NightSupportScreen from "../screens/NightSupportScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import serviceScreen from "../screens/serviceScreen";
 import control from "../screens/control";
+import DialerScreen from "../screens/DialerScreen";
 const Stack = createStackNavigator();
 
 const AuthStack = () => {
@@ -26,6 +27,7 @@ const AuthStack = () => {
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="service" component={serviceScreen} />
       <Stack.Screen name="cont" component={control} />
+      <Stack.Screen name="dialer" component={DialerScreen} />
     </Stack.Navigator>
   );
 };

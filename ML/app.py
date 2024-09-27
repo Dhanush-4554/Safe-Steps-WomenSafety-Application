@@ -48,7 +48,7 @@ def home():
 
 def send_call():
     try:
-        live_location = "https://maps-eta-gilt.vercel.app/map"
+        live_location = "https://disp-map.vercel.app/"
         twiml = VoiceResponse()
         twiml.say(voice='alice', message='Hello! Your friend might be in big trouble. Please check the SMS message.')
 
@@ -71,7 +71,7 @@ def send_call():
 
 def send_sms():
     try:
-        live_location = "https://maps-eta-gilt.vercel.app/map"
+        live_location = "https://disp-map.vercel.app/"
 
         client.messages.create(
             from_='+16122844698',
@@ -114,7 +114,7 @@ def send_sms_endpoint():
 # Asynchronous Twilio SMS function
 async def async_send_sms():
     try:
-        live_location = "https://maps-eta-gilt.vercel.app/map"
+        live_location = "https://disp-map.vercel.app/"
         await client.messages.create(
             from_='+16122844698',
             to='+917483523450',
@@ -132,7 +132,7 @@ async def async_send_sms():
 # Asynchronous Twilio call function
 async def async_send_call():
     try:
-        live_location = "https://maps-eta-gilt.vercel.app/map"
+        live_location = "https://disp-map.vercel.app/"
         twiml = VoiceResponse()
         twiml.say(voice='alice', message='Hello! Your friend might be in big trouble. Please check the SMS message.')
 

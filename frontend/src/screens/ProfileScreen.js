@@ -7,6 +7,7 @@ import {
   TextInput,
   Alert,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import {
   getFirestore,
@@ -87,12 +88,8 @@ const ProfileScreen = ({ navigation }) => {
         navigation.navigate("Landing"); // Navigate back to login screen
       }
     } catch (error) {
-      // If the user has been logged in for a long time, reauthentication is required
       if (error.code === "auth/requires-recent-login") {
         Alert.alert("Error", "Please log in again to delete your account.");
-
-        // Optionally: Redirect to a reauthentication screen
-        // You could prompt the user to log in again, then retry the deletion
       } else {
         Alert.alert("Error", error.message);
       }
@@ -112,7 +109,6 @@ const ProfileScreen = ({ navigation }) => {
       <Text style={styles.title}>Profile Information</Text>
 
       {isEditing ? (
-        // Edit Mode: Editable fields
         <>
           <TextInput
             style={styles.input}
@@ -147,7 +143,6 @@ const ProfileScreen = ({ navigation }) => {
             placeholder="Phone"
           />
 
-          {/* Trusted Persons */}
           <Text style={styles.subTitle}>Trusted Person 1</Text>
           <TextInput
             style={styles.input}
@@ -212,18 +207,26 @@ const ProfileScreen = ({ navigation }) => {
             placeholder="Trusted Person 2 Phone"
           />
 
-          <Button title="Save Changes" onPress={handleSaveChanges} />
-          <Button title="Cancel" onPress={() => setIsEditing(false)} />
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={handleSaveChanges}
+          >
+            <Text style={styles.buttonText}>Save Changes</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => setIsEditing(false)}
+          >
+            <Text style={styles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
         </>
       ) : (
-        // View Mode: Display profile data
         <>
           <Text style={styles.label}>Name: {userData.name}</Text>
           <Text style={styles.label}>Gender: {userData.gender}</Text>
           <Text style={styles.label}>Email: {userData.email}</Text>
           <Text style={styles.label}>Phone: {userData.phone}</Text>
 
-          {/* Trusted Persons */}
           <Text style={styles.subTitle}>Trusted Person 1</Text>
           <Text style={styles.label}>
             Name: {userData.trustedPersons[0]?.name}
@@ -246,25 +249,25 @@ const ProfileScreen = ({ navigation }) => {
             Phone: {userData.trustedPersons[1]?.phone}
           </Text>
 
-          {/* <Button title="Edit Profile" onPress={() => setIsEditing(true)} />
-          <Button title="Delete Account" onPress={handleDeleteAccount} /> */}
           <View style={styles.buttonContainer}>
-            <View style={styles.button}>
-              <Button title="Edit" onPress={() => setIsEditing(true)} />
-            </View>
-            <View style={styles.button}>
-              <Button
-                title="Delete Account"
-                onPress={handleDeleteAccount}
-                color="red"
-              />
-            </View>
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => setIsEditing(true)}
+            >
+              <Text style={styles.buttonText}>Edit Profile</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={handleDeleteAccount}
+            >
+              <Text style={styles.buttonText}>Delete Account</Text>
+            </TouchableOpacity>
           </View>
         </>
       )}
 
-      <Button
-        title="Logout"
+      <TouchableOpacity
+        style={styles.logoutButton}
         onPress={() => {
           auth
             .signOut()
@@ -276,7 +279,9 @@ const ProfileScreen = ({ navigation }) => {
               Alert.alert("Error", error.message);
             });
         }}
-      />
+      >
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -286,40 +291,77 @@ const styles = StyleSheet.create({
     padding: 20,
     flexGrow: 1,
     justifyContent: "center",
+    backgroundColor: "#fff",
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
+    color: "#FF5A5F",
     marginBottom: 20,
+    textAlign: "center",
   },
   subTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
+    color: "#333",
     marginTop: 15,
     marginBottom: 10,
   },
   label: {
     fontSize: 16,
     marginBottom: 10,
+    color: "#333",
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#FF5A5F",
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,
+    color: "#333",
   },
-  // Styles for the button container to place buttons side by side
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 30,
-    marginBottom: 30,
+    justifyContent: "space-around",
+    marginTop: 20,
   },
-  // Styles for individual buttons with margin between them
-  button: {
-    flex: 1,
-    marginHorizontal: 5,
+  editButton: {
+    backgroundColor: "#FF5A5F",
+    padding: 10,
+    borderRadius: 5,
+    width: "45%",
+  },
+  deleteButton: {
+    backgroundColor: "#FF5A5F",
+    padding: 10,
+    borderRadius: 5,
+    width: "45%",
+  },
+  saveButton: {
+    backgroundColor: "#FF5A5F",
+    padding: 15,
+    borderRadius: 5,
+    marginTop: 20,
+    alignItems: "center",
+  },
+  cancelButton: {
+    backgroundColor: "#ccc",
+    padding: 15,
+    borderRadius: 5,
+    marginTop: 10,
+    alignItems: "center",
+  },
+  logoutButton: {
+    backgroundColor: "#FF5A5F",
+    padding: 15,
+    borderRadius: 5,
+    marginTop: 30,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    textAlign: "center",
   },
 });
 

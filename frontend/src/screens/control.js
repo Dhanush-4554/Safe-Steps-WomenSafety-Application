@@ -57,6 +57,7 @@ const Control = () => {
             key={index}
             style={styles.contactItem}
             onPress={() => openDialPad(contact.number)}
+            activeOpacity={0.7} // Button press effect
           >
             <Text style={styles.cityText}>{contact.city}:</Text>
             <Text style={styles.numberText}>{contact.number}</Text>
@@ -72,11 +73,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 50,
     paddingHorizontal: 20,
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#EAF0F1',
   },
   header: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
+    color: '#FF5A5F',
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -84,18 +86,21 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   contactItem: {
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    padding: 15,
     marginBottom: 15,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#cccccc',
+    elevation: 2,
   },
   cityText: {
     fontSize: 18,
     fontWeight: '600',
+    color: '#2C3A47',
   },
   numberText: {
     fontSize: 16,
     color: '#555',
+    marginTop: 5,
   },
 });
 

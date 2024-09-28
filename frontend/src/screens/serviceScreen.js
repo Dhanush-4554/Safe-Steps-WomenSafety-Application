@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Linking, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, Linking, TouchableOpacity, Text, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const App = () => {
@@ -21,6 +21,10 @@ const App = () => {
             style={styles.button}
             onPress={() => navigation.navigate("cont")}
           >
+            <Image
+              source={require('../pics/control.png')}
+              style={styles.icon}
+            />
             <Text style={styles.buttonText}>Control Room</Text>
           </TouchableOpacity>
         </View>
@@ -29,6 +33,10 @@ const App = () => {
             style={styles.button}
             onPress={handlePoliceStationPress}
           >
+            <Image
+              source={require('../pics/police.png')}
+              style={styles.icon}
+            />
             <Text style={styles.buttonText}>Police Station</Text>
           </TouchableOpacity>
         </View>
@@ -42,7 +50,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'gray', // A solid color instead of a gradient
+    backgroundColor: '#F0F0F0',
   },
   card: {
     backgroundColor: 'white',
@@ -75,12 +83,20 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 25,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+    marginLeft: 10,
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
   },
 });
 

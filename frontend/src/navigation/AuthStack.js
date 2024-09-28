@@ -26,9 +26,9 @@ const AuthStack = () => {
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="NightSupport" component={NightSupportScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
-      <Stack.Screen name="service" component={serviceScreen} />
+      <Stack.Screen name="Service" component={serviceScreen} />
       <Stack.Screen name="cont" component={control} />
-      <Stack.Screen name="dialer" component={DialerScreen} />
+      <Stack.Screen name="Dialer" component={DialerScreen} />
       <Stack.Screen name="homeTemp" component={Temp} />
     </Stack.Navigator>
   );

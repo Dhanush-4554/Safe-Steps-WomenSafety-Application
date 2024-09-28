@@ -5,9 +5,10 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  ActivityIndicator,
   Alert,
 } from "react-native";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth"; // Import Firebase Auth
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 
 export default function LoginScreen() {
@@ -18,18 +19,10 @@ export default function LoginScreen() {
   const navigation = useNavigation();
 
   const handleLogin = async () => {
-    const auth = getAuth(); // Initialize Firebase Auth
+    const auth = getAuth();
     setLoading(true);
-
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-
-      // Navigate to Profile Screen after successful login
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       navigation.navigate("Home");
     } catch (error) {
       console.error("Login failed:", error);
@@ -39,17 +32,18 @@ export default function LoginScreen() {
     }
   };
 
-  const handleRegister = async () => {
+  const handleRegister = () => {
     navigation.navigate("Register");
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Welcome Back</Text>
 
       <TextInput
         style={styles.input}
         placeholder="Email"
+        placeholderTextColor="#fff"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -59,25 +53,24 @@ export default function LoginScreen() {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor="#fff"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
 
       <TouchableOpacity
-        style={[styles.button, { backgroundColor: "#fff" }]}
+        style={[styles.button, loading && styles.disabledButton]}
         onPress={handleLogin}
         disabled={loading}
       >
-        <Text style={styles.buttonText}>
-          {loading ? "Logging in..." : "Login"}
-        </Text>
+        {loading ? <ActivityIndicator color="#ff4b5c" /> : <Text style={styles.buttonText}>Login</Text>}
       </TouchableOpacity>
 
       <Text style={styles.promptText}>
-        New around here?
+        Don't have an account?
         <Text style={styles.registerText} onPress={handleRegister}>
-          Join us today
+          Sign up
         </Text>
       </Text>
     </View>
@@ -88,45 +81,49 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 20,
-    //backgroundColor: "#F95959",
-    backgroundColor: "#F95959", // Match background color to the landing page
+    alignItems: "center",
+    backgroundColor: "#ff5a5f",  // Background color based on theme
+    paddingHorizontal: 20,
   },
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    color: "#fff", // White text to match the landing page
-    marginBottom: 20,
-    textAlign: "center",
+    color: "#fff",  // White text for contrast with background
+    marginBottom: 40,
   },
   input: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#fff", // White underline for input fields
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#fff",  // White border to match theme
+    borderRadius: 10,
+    padding: 12,
     marginBottom: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    color: "#fff", // White text for input fields
+    color: "#fff",  // White text inside input
+    backgroundColor: "transparent",  // Transparent to let background show through
   },
   button: {
-    backgroundColor: "#FFB830", // Use the same button color from the landing page
-    paddingVertical: 12,
+    width: "100%",
+    backgroundColor: "#fff",  // White button to stand out on red background
+    paddingVertical: 14,
     borderRadius: 30,
-    marginVertical: 10,
     alignItems: "center",
+    marginVertical: 10,
+  },
+  disabledButton: {
+    backgroundColor: "#ffb3b9",  // Slightly muted version of white for disabled state
   },
   buttonText: {
-    color: "#F95959", // Match button text color to the landing page
+    color: "#ff4b5c",  // Red text on white button for contrast
     fontWeight: "bold",
-    fontSize: 16,
-  },
-  promptText: {
-    color: "#fff",
-    marginTop: 20,
-    textAlign: "center",
     fontSize: 18,
   },
+  promptText: {
+    color: "#fff",  // White text for the prompt
+    fontSize: 16,
+    marginTop: 20,
+  },
   registerText: {
-    color: "#FFB830", // Highlight the "Register" text in button color
+    color: "#fff",  // White "Sign up" text to match the rest
     fontWeight: "bold",
   },
 });

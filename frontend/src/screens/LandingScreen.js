@@ -41,6 +41,12 @@ const Landing = ({ navigation }) => {
           >
             <Text style={styles.buttonText}>Get Started</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.buttonStyle}
+            onPress={() => navigation.navigate("Home")}
+          >
+            <Text style={styles.buttonText}>Home page</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView>

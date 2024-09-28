@@ -14,6 +14,10 @@ import * as Location from "expo-location";
 import { database } from "../../configure"; // Import the configured Firebase
 import { ref, set, onValue } from "firebase/database";
 
+import io from "socket.io-client"; // Import Socket.IO client
+
+const socket = io("http://10.1.6.189:5000"); // Replace with your Flask server IP and port
+
 export default function NightSupportScreen({ navigation }) {
   const [isEnabled, setIsEnabled] = useState(false);
   const [location, setLocation] = useState(null);
@@ -64,7 +68,7 @@ export default function NightSupportScreen({ navigation }) {
       const response = await fetch("http://10.1.6.189:5000/confirm-call", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ file: "<audio-file-data>" }), // Replace with your audio file data
+        // body: JSON.stringify({ file: "<audio-file-data>" }), // Replace with your audio file data
       });
 
       const data = await response.json();
@@ -92,6 +96,17 @@ export default function NightSupportScreen({ navigation }) {
     }
   };
 
+  useEffect(() => {
+    // Listen for the start prediction event from the backend
+    socket.on("start_prediction", (data) => {
+      console.log(data.message);
+      startPrediction(); // Automatically start prediction
+    });
+
+    return () => {
+      socket.off("start_prediction"); // Clean up the event listener when component unmounts
+    };
+  }, []);
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
   // Request microphone permission using Audio API

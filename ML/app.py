@@ -16,12 +16,16 @@ from tensorflow.keras.models import load_model
 import logging
 import speech_recognition as sr
 
+from flask_socketio import SocketIO, emit
+
 # Configure logging to show only errors
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)
+
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # /send-call
 
@@ -192,9 +196,8 @@ def confirm_call():
     global call_initiated
     if not call_initiated:
         try:
-
             call_initiated = True
-            print("Call the send_alert function")
+            asyncio.run(send_alerts())
             return jsonify({'message': 'Call and SMS initiated successfully.'}), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500
@@ -205,6 +208,7 @@ def confirm_call():
 def cancel_call():
     global call_initiated
     call_initiated = False
+    logger.error("The SOS detection retrived")
     return jsonify({'message': 'Call initiation canceled.'}), 200
 
 
@@ -270,7 +274,8 @@ def predict():
             logger.error(f"Help detection result: {result}")
 
             if result == "Help":
-                asyncio.run(send_alerts())
+                # asyncio.run(send_alerts())
+                asyncio.run(trigger_start_prediction())
         else:
             result = "No keyword detected. The audio indicates 'No Help'."
             logger.error("Help detection result: No Help (No keyword detected)")
@@ -292,6 +297,14 @@ def predict():
         logger.error(f'An error occurred during processing: {str(e)}')
         return jsonify({'error': 'An error occurred', 'details': str(e)}), 500
 
+#############################################################################################################################################
+
+# Define the function to trigger prediction in the app
+def trigger_start_prediction():
+    socketio.emit('start_prediction', {'message': 'Start prediction triggered due to Help detection'})
+
+
+##################################################################################################################################################
 def preprocess_audio(audio_file_path):
     recognizer = sr.Recognizer()
     with sr.AudioFile(audio_file_path) as source:
@@ -380,3 +393,6 @@ if __name__ == '__main__':
         os.makedirs('uploads')
     
     app.run(host='0.0.0.0', port=5000)
+
+if __name__ == '__main__':
+    socketio.run(app, host='0.0.0.0', port=5000)

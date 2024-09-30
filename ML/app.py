@@ -30,8 +30,8 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 # /send-call
 
 # Twilio credentials
-account_sid = "AC7f41acdba81736c349ab2a60622b97a4"
-auth_token = "fc69f0823f5a7a4d031a48c6d9ab4440"
+account_sid = "AC8b190879e55970c9566b7a76b2686f6b"
+auth_token = "b9c390a3905bc0efe942f450a7db2c22"
 client = Client(account_sid, auth_token)
 
 # Load the trained help detection model
@@ -52,33 +52,32 @@ def home():
 
 def send_call():
     try:
-        live_location = "https://disp-map.vercel.app/"
         twiml = VoiceResponse()
         twiml.say(voice='alice', message='Hello! Your friend might be in big trouble. Please check the SMS message.')
 
         call = client.calls.create(
             twiml=twiml,
-            to='+917483523450',
-            from_='+16122844698'
+            to='+917975789740',
+            from_='+16613386382'
         )
         logger.error(f'Call initiated. Call SID: {call.sid}')
 
         call = client.calls.create(
             twiml=twiml,
-            to='+916361304218',
-            from_='+16122844698'
+            to='+917975177551',
+            from_='+16613386382'
         )
 
         # call = client.calls.create(
         #     twiml=twiml,
         #     to='112',
-        #     from_='+16122844698'
+        #     from_='+16613386382'
         # )
 
         # call = client.calls.create(
         #     twiml=twiml,
         #     to='{control}',
-        #     from_='+16122844698'
+        #     from_='+16613386382'
         # )
 
         logger.error(f'Call initiated. Call SID: {call.sid}')
@@ -91,26 +90,26 @@ def send_sms():
         live_location = "https://disp-map.vercel.app/"
 
         client.messages.create(
-            from_='+16122844698',
-            to='+917483523450',
+            from_='+16613386382',
+            to='+917975789740',
             body=f'Your friend is in big trouble, please check out the link: {live_location}'
         )
         logger.error('SMS alert sent successfully.')
 
         client.messages.create(
-            from_='+16122844698',
-            to='+916361304218',
+            from_='+16613386382',
+            to='+917975177551',
             body=f'Your friend is in big trouble, please check out the link: {live_location}'
         )
 
         # client.messages.create(
-        #     from_='+16122844698',
-        #     to='+916361304218',
+        #     from_='+16613386382',
+        #     to='112',
         #     body=f'Your friend is in big trouble, please check out the link: {live_location}'
         # )
 
         # client.messages.create(
-        #     from_='+16122844698',
+        #     from_='+16613386382',
         #     to='{control}',
         #     body=f'Your friend is in big trouble, please check out the link: {live_location}'
         # )
@@ -145,14 +144,14 @@ async def async_send_sms():
     try:
         live_location = "https://disp-map.vercel.app/"
         await client.messages.create(
-            from_='+16122844698',
-            to='+917483523450',
+            from_='+16613386382',
+            to='+917975789740',
             body=f'Your friend is in big trouble, please check out the link: {live_location}'
         )
 
         await client.messages.create(
-            from_='+16122844698',
-            to='+916361304218',
+            from_='+16613386382',
+            to='+917975177551',
             body=f'Your friend is in big trouble, please check out the link: {live_location}'
         )
     except Exception as e:
@@ -161,19 +160,19 @@ async def async_send_sms():
 # Asynchronous Twilio call function
 async def async_send_call():
     try:
-        live_location = "https://disp-map.vercel.app/"
+        
         twiml = VoiceResponse()
         twiml.say(voice='alice', message='Hello! Your friend might be in big trouble. Please check the SMS message.')
 
         await client.calls.create(
             twiml=twiml,
-            to='+917483523450',
-            from_='+16122844698'
+            to='+917975789740',
+            from_='+16613386382'
         )
         await client.calls.create(
             twiml=twiml,
-            to='+916361304218',
-            from_='+16122844698'
+            to='+917975177551',
+            from_='+16613386382'
         )
     except Exception as e:
         logger.error(f'Failed to send call alert: {str(e)}')
@@ -197,7 +196,8 @@ def confirm_call():
     if not call_initiated:
         try:
             call_initiated = True
-            asyncio.run(send_alerts())
+            send_call()
+            send_sms()
             return jsonify({'message': 'Call and SMS initiated successfully.'}), 200
         except Exception as e:
             return jsonify({'error': str(e)}), 500

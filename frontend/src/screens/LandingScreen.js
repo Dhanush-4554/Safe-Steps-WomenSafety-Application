@@ -26,7 +26,7 @@ const Landing = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.mainContainer}>
-        <Text style={styles.mainHeader}>SAFE STEPS</Text>
+        <Text style={styles.mainHeader}>SHREE SHAKTHI</Text>
         <Text style={styles.subHeader}>
           Stay safe, stay strong, stay empowered.
         </Text>
@@ -41,12 +41,12 @@ const Landing = ({ navigation }) => {
           >
             <Text style={styles.buttonText}>Get Started</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.buttonStyle}
             onPress={() => navigation.navigate("Home")}
           >
             <Text style={styles.buttonText}>Home page</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </ScrollView>
@@ -102,8 +102,11 @@ const styles = StyleSheet.create({
   },
   mainHeader: {
     fontFamily: "Montserrat",
-    fontSize: 80,
+    fontSize: 70,
     color: "white",
+    alignContent: "center",
+    alignItems: "center",
+    textAlign: "center",
   },
   subHeader: {
     fontFamily: "Roboto",

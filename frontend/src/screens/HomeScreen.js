@@ -8,7 +8,7 @@ export default function HomeScreen({ navigation }) {
     console.log("SOS Clicked");
 
     try {
-      const response = await fetch("http://10.1.6.189:5000/send-call", {
+      const response = await fetch("http://192.168.29.34:5000/send-call", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -52,7 +52,7 @@ export default function HomeScreen({ navigation }) {
           style={styles.button}
         >
           <Ionicons name="moon" size={24} color="#FF5A5F" />
-          <Text style={styles.buttonText}>Night Support</Text>
+          <Text style={styles.buttonText}>Track Me</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate("Service")}

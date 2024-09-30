@@ -16,7 +16,7 @@ import { ref, set, onValue } from "firebase/database";
 
 import io from "socket.io-client"; // Import Socket.IO client
 
-const socket = io("http://10.1.6.189:5000"); // Replace with your Flask server IP and port
+const socket = io("http://192.168.29.34:5000"); // Replace with your Flask server IP and port
 
 export default function NightSupportScreen({ navigation }) {
   const [isEnabled, setIsEnabled] = useState(false);
@@ -27,7 +27,7 @@ export default function NightSupportScreen({ navigation }) {
   const [isRecording, setIsRecording] = useState(false);
   const recordingRef = useRef(null);
 
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //For enable and disable feature
 
@@ -50,6 +50,8 @@ export default function NightSupportScreen({ navigation }) {
       if (!isCancelled) {
         // Proceed with the backend call after the countdown finishes
         triggerPrediction();
+        setCountdown(10);
+        setIsPredicting(false);
       }
     }
 
@@ -65,7 +67,7 @@ export default function NightSupportScreen({ navigation }) {
 
   const triggerPrediction = async () => {
     try {
-      const response = await fetch("http://10.1.6.189:5000/confirm-call", {
+      const response = await fetch("http://192.168.29.34:5000/confirm-call", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // body: JSON.stringify({ file: "<audio-file-data>" }), // Replace with your audio file data
@@ -86,7 +88,7 @@ export default function NightSupportScreen({ navigation }) {
     setIsPredicting(false);
 
     try {
-      await fetch("http://10.1.6.189:5000/cancel-call", {
+      await fetch("http://192.168.29.34:5000/cancel-call", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
@@ -107,7 +109,7 @@ export default function NightSupportScreen({ navigation }) {
       socket.off("start_prediction"); // Clean up the event listener when component unmounts
     };
   }, []);
-  ////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // Request microphone permission using Audio API
   const getMicrophonePermission = async () => {
@@ -149,7 +151,7 @@ export default function NightSupportScreen({ navigation }) {
     }
 
     try {
-      const response = await fetch("http://10.1.6.189:5000/send-sms", {
+      const response = await fetch("http://192.168.29.34:5000/send-sms", {
         method: "POST",
       });
       if (!response.ok) {
@@ -277,7 +279,7 @@ export default function NightSupportScreen({ navigation }) {
         });
 
         try {
-          const response = await fetch("http://10.1.6.189:5000/predict", {
+          const response = await fetch("http://192.168.29.34:5000/predict", {
             method: "POST",
             body: formData,
           });
@@ -338,19 +340,30 @@ export default function NightSupportScreen({ navigation }) {
     <View style={styles.container}>
       {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
 
-      <View>
+      <View style={styles.stopContainer}>
         {isPredicting ? (
-          <View>
-            <Text>Predicting... Countdown: {countdown}s</Text>
-            <Button title="Cancel Prediction" onPress={cancelPrediction} />
+          <View style={styles.stopDiv}>
+            <Text style={styles.stopAlertTxt}>
+              Voice SOS will be Activated In {countdown}s
+            </Text>
+            {/* <Button
+              title="Stop Voice SOS"
+              onPress={cancelPrediction}
+              style={styles.stopBtn}
+            /> */}
+            <TouchableOpacity style={styles.stopBtn} onPress={cancelPrediction}>
+              <Text style={styles.stopTxt}>Stop Voice SOS</Text>
+            </TouchableOpacity>
           </View>
         ) : (
-          <Button title="Start Prediction" onPress={startPrediction} />
+          <TouchableOpacity style={styles.stopBtn} onPress={startPrediction}>
+            <Text style={styles.stopTxt}>Voice SOS is Inactive</Text>
+          </TouchableOpacity>
         )}
       </View>
 
       {/* /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <Text style={styles.title}>Night Support Mode</Text>
+      <Text style={styles.title}>Track Me Mode</Text>
       <Text style={styles.subtitle}>
         Toggle to enable night mode for better night-time safety.
       </Text>
@@ -378,7 +391,7 @@ export default function NightSupportScreen({ navigation }) {
         <TouchableOpacity
           style={[
             styles.micButton,
-            { backgroundColor: isMicEnabled ? "#d3d3d3" : "#b0b0b0" },
+            { backgroundColor: isMicEnabled ? "#FF5A5F" : "#FF5A5F" },
           ]} // Grey background, lighter when enabled
           onPress={enableMic}
           disabled={isMicEnabled}
@@ -387,13 +400,13 @@ export default function NightSupportScreen({ navigation }) {
             {isMicEnabled ? "Microphone Enabled" : "Enable Microphone"}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.micButton}
           onPress={stopMic}
           disabled={!isMicEnabled}
         >
           <Text style={styles.micButtonText}>Stop Microphone</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {/* Footer section */}
@@ -410,7 +423,21 @@ export default function NightSupportScreen({ navigation }) {
           style={styles.button}
         >
           <Ionicons name="moon" size={24} color="#FF5A5F" />
-          <Text style={styles.buttonText}>Night Support</Text>
+          <Text style={styles.buttonText}>Track Me</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Service")}
+          style={styles.button}
+        >
+          <Ionicons name="settings-sharp" size={24} color="#FF5A5F" />
+          <Text style={styles.buttonText}>Services</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Dialer")}
+          style={styles.button}
+        >
+          <Ionicons name="call" size={24} color="#FF5A5F" />
+          <Text style={styles.buttonText}>dialer</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate("Profile")}
@@ -480,8 +507,31 @@ const styles = StyleSheet.create({
     width: "100%", // Full width of the micControls container
   },
   micButtonText: {
-    color: "#FFFFFF", // White text color
+    color: "#d45f63", // White text color
     textAlign: "center", // Center text
     fontSize: 16, // Font size for readability
+  },
+  stopContainer: {
+    marginBottom: 70,
+  },
+  stopBtn: {
+    backgroundColor: "white",
+    paddingVertical: 15,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 250,
+    marginTop: 10,
+  },
+  stopTxt: {
+    fontFamily: "Roboto",
+    fontSize: 18,
+    color: "#FF5A5F",
+  },
+  stopAlertTxt: {
+    fontSize: 18,
+    color: "black",
+    fontFamily: "Roboto",
   },
 });

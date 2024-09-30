@@ -340,32 +340,11 @@ export default function NightSupportScreen({ navigation }) {
     <View style={styles.container}>
       {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
 
-      <View style={styles.stopContainer}>
-        {isPredicting ? (
-          <View style={styles.stopDiv}>
-            <Text style={styles.stopAlertTxt}>
-              Voice SOS will be Activated In {countdown}s
-            </Text>
-            {/* <Button
-              title="Stop Voice SOS"
-              onPress={cancelPrediction}
-              style={styles.stopBtn}
-            /> */}
-            <TouchableOpacity style={styles.stopBtn} onPress={cancelPrediction}>
-              <Text style={styles.stopTxt}>Stop Voice SOS</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity style={styles.stopBtn} onPress={startPrediction}>
-            <Text style={styles.stopTxt}>Voice SOS is Inactive</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
 
-      {/* /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
       <Text style={styles.title}>Track Me Mode</Text>
       <Text style={styles.subtitle}>
-        Toggle to enable night mode for better night-time safety.
+        Toggle to enable track me mode for better safety.
       </Text>
 
       <Switch
@@ -419,7 +398,7 @@ export default function NightSupportScreen({ navigation }) {
           <Text style={styles.buttonText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate("NightSupport")}
+          onPress={() => navigation.navigate("Track Me")}
           style={styles.button}
         >
           <Ionicons name="moon" size={24} color="#FF5A5F" />

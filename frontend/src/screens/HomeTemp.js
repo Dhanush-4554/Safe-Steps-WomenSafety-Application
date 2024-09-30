@@ -164,7 +164,7 @@ export default function Temp({ navigation }) {
           <Text style={styles.buttonText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate("NightSupport")}
+          onPress={() => navigation.navigate("Track Me")}
           style={styles.button}
         >
           <Ionicons name="moon" size={24} color="#FF5A5F" />

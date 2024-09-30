@@ -1,9 +1,97 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import SOSButton from "../components/SOSButton";
 
+import io from "socket.io-client"; // Import Socket.IO client
+
+const socket = io("http://192.168.29.34:5000"); // Replace with your Flask server IP and port
+
 export default function HomeScreen({ navigation }) {
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //For enable and disable feature
+
+  const [isPredicting, setIsPredicting] = useState(false);
+  const [countdown, setCountdown] = useState(10); // 10 seconds countdown
+  const [isCancelled, setIsCancelled] = useState(false);
+
+  //this the function for the delay feature
+  useEffect(() => {
+    let countdownInterval = null;
+
+    if (isPredicting && countdown > 0 && !isCancelled) {
+      countdownInterval = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+    }
+
+    if (countdown === 0) {
+      clearInterval(countdownInterval);
+      if (!isCancelled) {
+        // Proceed with the backend call after the countdown finishes
+        triggerPrediction();
+        setCountdown(10);
+        setIsPredicting(false);
+      }
+    }
+
+    // Clear the interval when countdown finishes or when the component unmounts
+    return () => clearInterval(countdownInterval);
+  }, [isPredicting, countdown, isCancelled]);
+
+  const startPrediction = () => {
+    setIsPredicting(true);
+    setCountdown(10);
+    setIsCancelled(false);
+  };
+
+  const triggerPrediction = async () => {
+    try {
+      const response = await fetch("http://192.168.29.34:5000/confirm-call", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // body: JSON.stringify({ file: "<audio-file-data>" }), // Replace with your audio file data
+      });
+
+      const data = await response.json();
+      console.log("Prediction Result:", data);
+      // Reset after prediction completes
+      setIsPredicting(false);
+    } catch (error) {
+      console.error("Error triggering prediction:", error);
+      setIsPredicting(false);
+    }
+  };
+
+  const cancelPrediction = async () => {
+    setIsCancelled(true);
+    setIsPredicting(false);
+
+    try {
+      await fetch("http://192.168.29.34:5000/cancel-call", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log("Prediction canceled.");
+    } catch (error) {
+      console.error("Error canceling prediction:", error);
+    }
+  };
+
+  useEffect(() => {
+    // Listen for the start prediction event from the backend
+    socket.on("start_prediction", (data) => {
+      console.log(data.message);
+      startPrediction(); // Automatically start prediction
+    });
+
+    return () => {
+      socket.off("start_prediction"); // Clean up the event listener when component unmounts
+    };
+  }, []);
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   const handleSOSPress = async () => {
     console.log("SOS Clicked");
 
@@ -33,6 +121,32 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+
+      <View style={styles.stopContainer}>
+        {isPredicting ? (
+          <View style={styles.stopDiv}>
+            <Text style={styles.stopAlertTxt}>
+              Voice SOS will be Activated In {countdown}s
+            </Text>
+            {/* <Button
+              title="Stop Voice SOS"
+              onPress={cancelPrediction}
+              style={styles.stopBtn}
+            /> */}
+            <TouchableOpacity style={styles.stopBtn} onPress={cancelPrediction}>
+              <Text style={styles.stopTxt}>Stop Voice SOS</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity style={styles.stopBtn} onPress={startPrediction}>
+            <Text style={styles.stopTxt}>Voice SOS is Inactive</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+
       <Text style={styles.title}>Having an Emergency?</Text>
       <Text style={styles.subtitle}>
         Tap the SOS button to alert the emergency services.
@@ -48,7 +162,7 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.buttonText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate("NightSupport")}
+          onPress={() => navigation.navigate("Track Me")}
           style={styles.button}
         >
           <Ionicons name="moon" size={24} color="#FF5A5F" />
@@ -116,5 +230,34 @@ const styles = StyleSheet.create({
   buttonText: {
     marginTop: 4,
     color: "#FF5A5F",
+  },
+  stopContainer: {
+    // marginTop: 10,
+    marginBottom: 80,
+  },
+  stopBtn: {
+    backgroundColor: "#FF5A5F",
+    paddingVertical: 15,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    width: 270,
+    marginTop: 10,
+    marginLeft: 20,
+  },
+  stopTxt: {
+    fontFamily: "Roboto",
+    fontSize: 18,
+    color: "white",
+  },
+  stopAlertTxt: {
+    fontSize: 21,
+    color: "black",
+    alignItems: "center",
+    textAlign: "center",
+    justifyContent: "center",
+    fontFamily: "Roboto",
+    fontWeight: "bold",
   },
 });

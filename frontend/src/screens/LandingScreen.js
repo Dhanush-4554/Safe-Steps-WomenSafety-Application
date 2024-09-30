@@ -26,7 +26,7 @@ const Landing = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.mainContainer}>
-        <Text style={styles.mainHeader}>SHREE SHAKTHI</Text>
+        <Text style={styles.mainHeader}>WOMEN SAFETY APP</Text>
         <Text style={styles.subHeader}>
           Stay safe, stay strong, stay empowered.
         </Text>
@@ -102,7 +102,8 @@ const styles = StyleSheet.create({
   },
   mainHeader: {
     fontFamily: "Montserrat",
-    fontSize: 70,
+    fontSize: 50,
+    marginTop: 40,
     color: "white",
     alignContent: "center",
     alignItems: "center",
@@ -113,7 +114,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: "white",
     paddingTop: 0,
-    marginTop: 0,
+    marginTop: 20,
     marginBottom: 60,
     lineHeight: 28,
   },

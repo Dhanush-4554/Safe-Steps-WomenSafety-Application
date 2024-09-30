@@ -167,7 +167,12 @@ const RegisterScreen = ({ navigation }) => {
       <View style={styles.container}>
         {/* User Details */}
         {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
-        <TextInput placeholder="Name" value={name} onChangeText={setName} style={styles.input}/>
+        <TextInput
+          placeholder="Name"
+          value={name}
+          onChangeText={setName}
+          style={styles.input}
+        />
 
         {errors.gender && <Text style={styles.errorText}>{errors.gender}</Text>}
         <Picker
@@ -182,7 +187,12 @@ const RegisterScreen = ({ navigation }) => {
         </Picker>
 
         {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-        <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input}/>
+        <TextInput
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          style={styles.input}
+        />
 
         {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
         <TextInput
@@ -293,10 +303,12 @@ const RegisterScreen = ({ navigation }) => {
           <Text style={styles.errorText}>{errors.trustedPersonDuplicate}</Text>
         )}
 
-        <TouchableOpacity title="Register" onPress={handleRegister} style={styles.button} >
-        <Text style={styles.buttonText}>
-          Register
-        </Text>
+        <TouchableOpacity
+          title="Register"
+          onPress={handleRegister}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -310,7 +322,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor:"#FF5A5F",
+    backgroundColor: "#FF5A5F",
     padding: 20,
   },
   errorText: {
@@ -343,7 +355,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: "center",
     marginBottom: 15,
-    
   },
 });
 

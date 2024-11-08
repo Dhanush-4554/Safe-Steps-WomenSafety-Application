@@ -1,4 +1,4 @@
-<h1 align="center" id="title">ProtectHer</h1>
+
 
 <p align="center"><img src="https://socialify.git.ci/Dhanush-K-Gowda/ProtectHER/image?description=1&amp;font=Raleway&amp;logo=https%3A%2F%2Fcdn-icons-png.freepik.com%2F256%2F6912%2F6912693.png%3Fsemt%3Dais_hybrid&amp;name=1&amp;pattern=Charlie%20Brown&amp;theme=Auto" alt="project-image"></p>
 
